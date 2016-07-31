@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/gradebook"
+            android:icon="@drawable/ic_menu_camera"
+            android:title="Журнал" />
+        <item
+            android:id="@+id/change_protocol"
+            android:title="Протокол изменений" />
+        <item
+            android:id="@+id/top_student"
+            android:icon="@drawable/ic_menu_slideshow"
+            android:title="Рейтинг" />
+        <item
+            android:id="@+id/testing_registration"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Запись в ЦДО" />
+        <item
+            android:id="@+id/settings"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Настройки" />
+        <item
+            android:id="@+id/feedback"
+            android:icon="@drawable/ic_menu_share"
+            android:title="Обратная связь" />
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Выйти" />
+    </group>
+
+
+</menu>
