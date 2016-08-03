@@ -1,6 +1,5 @@
 package com.akvone.dlcifmo;
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -11,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.akvone.dlcifmo.TopStudentsModule.CertainCourseFragment;
+import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -19,10 +21,9 @@ public class MainActivity extends AppCompatActivity
     NavigationView navigationView;
     BlankFragment blankFragment1;
     BlankFragment blankFragment2;
-    BlankFragment blankFragment3;
+    TopStFragment topStFragment;
     BlankFragment blankFragment4;
     BlankFragment blankFragment5;
-
 
 
     @Override
@@ -47,12 +48,10 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
     }
-
     private void initToolbar(){
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
-
     private void initNavigationView(){
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity
     public void loadFragments(){
         blankFragment1 = BlankFragment.newInstance("Здесь будет журнал с баллами по предметам");
         blankFragment2 = BlankFragment.newInstance("Здесь будет протокол изменений");
-        blankFragment3 = BlankFragment.newInstance("Здесь будет рейтинг топовых студентов");
+        topStFragment =  new TopStFragment();
         blankFragment4 = BlankFragment.newInstance("Здесь будет запись на тестирование");
         blankFragment5 = BlankFragment.newInstance("Здесь будет обратная связь");
     }
@@ -117,9 +116,14 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.top_student) {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_container, blankFragment3)
+                    .remove(getFragmentManager().findFragmentById(R.id.main_activity_container))
+                    .commit();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.main_activity_container, topStFragment)
                     .commit();
         } else if (id == R.id.testing_registration) {
+
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, blankFragment4)
