@@ -4,30 +4,31 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/gradebook"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_chrome_reader_mode_black_24dp"
             android:title="Журнал" />
         <item
             android:id="@+id/change_protocol"
+            android:icon="@drawable/ic_schedule_black_24dp"
             android:title="Протокол изменений" />
         <item
             android:id="@+id/top_student"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_people_black_24dp"
             android:title="Рейтинг" />
         <item
             android:id="@+id/testing_registration"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_computer_black_24dp"
             android:title="Запись в ЦДО" />
         <item
             android:id="@+id/settings"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_settings_black_24dp"
             android:title="Настройки" />
         <item
             android:id="@+id/feedback"
-            android:icon="@drawable/ic_menu_share"
+            android:icon="@drawable/ic_accessible_black_24dp"
             android:title="Обратная связь" />
         <item
             android:id="@+id/logout"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Выйти" />
     </group>
 
