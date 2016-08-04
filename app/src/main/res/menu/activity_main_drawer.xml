@@ -25,7 +25,7 @@
         <item
             android:id="@+id/feedback"
             android:icon="@drawable/ic_accessible_black_24dp"
-            android:title="Обратная связь" />
+            android:title="О разработчиках" />
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
