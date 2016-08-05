@@ -3,6 +3,7 @@ package com.akvone.dlcifmo;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -214,5 +215,6 @@ public class LoginActivity extends AppCompatActivity{
                 break;
         }
     }
+
 }
 
