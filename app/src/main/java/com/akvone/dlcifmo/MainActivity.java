@@ -1,7 +1,11 @@
 package com.akvone.dlcifmo;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -10,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.TestingRegistrationModule.DatePickerFragment;
 import com.akvone.dlcifmo.TestingRegistrationModule.TimePickerFragment;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
@@ -20,17 +25,27 @@ public class MainActivity extends AppCompatActivity
     Toolbar toolbar;
     DrawerLayout drawer;
     NavigationView navigationView;
-    BlankFragment blankFragment1;
-    BlankFragment blankFragment2;
+
+    Fragment journalFragment;
+    Fragment changesProtocolFragment;
     TopStFragment topStFragment;
+    Fragment enrollFragment;
+    Fragment feedbackFragment;
     DatePickerFragment datePickerFragment;
-    BlankFragment blankFragment4;
-    BlankFragment blankFragment5;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //Проверяем, пропускал ли пользователь авторизацию
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
+        if (sharedPref.getBoolean(getString(R.string.preference_skip_login_key),false)){
+
+        }
+        else {
+            startLoginActivity();
+        }
+
         setContentView(R.layout.activity_main);
         initToolbar();
         initDrawer();
@@ -39,7 +54,7 @@ public class MainActivity extends AppCompatActivity
         loadFragments();
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_container, blankFragment1)
+                .replace(R.id.main_activity_container, journalFragment)
                 .commit();
     }
 
@@ -50,24 +65,28 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
     }
-
-    private void initToolbar() {
+    private void initToolbar(){
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
-
-    private void initNavigationView() {
+    private void initNavigationView(){
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    public void loadFragments() {
-        blankFragment1 = BlankFragment.newInstance("Здесь будет журнал с баллами по предметам");
-        blankFragment2 = BlankFragment.newInstance("Здесь будет протокол изменений");
+    public void loadFragments(){
+        if (false) {
+            journalFragment = BlankFragment.newInstance("Здесь будет журнал с баллами по предметам");
+            changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
+            enrollFragment = BlankFragment.newInstance("Здесь будет запись на тестирование");
+        }
+        else{
+            journalFragment = NonAuthorizedFragment.newInstance();
+            changesProtocolFragment = NonAuthorizedFragment.newInstance();
+            enrollFragment = NonAuthorizedFragment.newInstance();
+        }
         topStFragment = new TopStFragment();
-        datePickerFragment = DatePickerFragment.newInstance("","");
-        blankFragment4 = BlankFragment.newInstance("Здесь будет запись на тестирование");
-        blankFragment5 = BlankFragment.newInstance("Здесь будет обратная связь");
+        feedbackFragment = BlankFragment.newInstance("Здесь будет обратная связь");
     }
 
     @Override
@@ -80,28 +99,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.main, menu);
-//        return true;
-//    }
-
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -111,12 +108,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.gradebook) {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_container, blankFragment1)
+                    .replace(R.id.main_activity_container, journalFragment)
                     .commit();
         } else if (id == R.id.change_protocol) {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_container, blankFragment2)
+                    .replace(R.id.main_activity_container, changesProtocolFragment)
                     .commit();
         } else if (id == R.id.top_student) {
             getFragmentManager()
@@ -135,24 +132,28 @@ public class MainActivity extends AppCompatActivity
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, datePickerFragment)
+                    .replace(R.id.main_activity_container, enrollFragment)
                     .commit();
         } else if (id == R.id.settings) {
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
+            startActivity(new Intent(getApplicationContext(),SettingsActivity.class));
         } else if (id == R.id.feedback) {
             getFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_container, blankFragment5)
+                    .replace(R.id.main_activity_container, feedbackFragment)
                     .commit();
         } else if (id == R.id.logout) {
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            startLoginActivity();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer != null) {
             drawer.closeDrawer(GravityCompat.START);
         }
         return true;
+    }
+
+    public void startLoginActivity(){
+        startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        finish();
     }
 
     @Override

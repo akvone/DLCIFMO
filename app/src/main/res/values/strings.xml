@@ -1,16 +1,22 @@
 <resources>
     <string name="app_name">DLC IFMO</string>
 
+    <string name="preference_file_key">my_application_preferences</string>
+    <string name="preference_skip_login_key">skipLoginBoolean</string>
+    <string name="preference_has_login_data_key">hasLoginData</string>
+    <string name="preference_login_key">login</string>
+    <string name="preference_password_key">password</string>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="title_activity_login">Login</string>
+    <string name="title_activity_login">Авторизация в ЦДО</string>
 
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in</string>
+    <!-- Strings related to activity_login -->
+    <string name="prompt_email">Логин ЦДО</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_sign_in">Войти</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>

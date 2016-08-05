@@ -1,7 +1,6 @@
-package com.akvone.dlcifmo.TestingRegistrationModule;
+package com.akvone.dlcifmo.EnrollModule;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,10 +45,10 @@ import javax.net.ssl.HttpsURLConnection;
  * Activities that contain this fragment must implement the
  * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link TimePickerFragment#newInstance} factory method to
+ * Use the {@link EnrollTimePickerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TimePickerFragment extends FragmentWithLoader {
+public class EnrollTimePickerFragment extends FragmentWithLoader {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_DAY = "day";
@@ -68,13 +67,13 @@ public class TimePickerFragment extends FragmentWithLoader {
     private StringBuilder date; //Дата записи, приведённая к понятному ЦДО виду (01.09.2016)
     private BookItemAdaptor adapter;
 
-    public TimePickerFragment() {
+    public EnrollTimePickerFragment() {
         // Required empty public constructor
     }
 
     // TODO: Rename and change types and number of parameters
-    public static TimePickerFragment newInstance(int day, int month, int year) {
-        TimePickerFragment fragment = new TimePickerFragment();
+    public static EnrollTimePickerFragment newInstance(int day, int month, int year) {
+        EnrollTimePickerFragment fragment = new EnrollTimePickerFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_DAY, day);
         args.putInt(ARG_MONTH, month);

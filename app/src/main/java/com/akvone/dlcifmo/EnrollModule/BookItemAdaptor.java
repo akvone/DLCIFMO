@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo.TestingRegistrationModule;
+package com.akvone.dlcifmo.EnrollModule;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;

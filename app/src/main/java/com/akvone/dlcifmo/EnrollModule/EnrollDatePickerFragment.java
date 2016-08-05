@@ -1,7 +1,6 @@
-package com.akvone.dlcifmo.TestingRegistrationModule;
+package com.akvone.dlcifmo.EnrollModule;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,7 +8,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.TextView;
 
 import com.akvone.dlcifmo.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.R;
@@ -19,10 +17,10 @@ import com.akvone.dlcifmo.R;
  * Activities that contain this fragment must implement the
  * {@link OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link DatePickerFragment#newInstance} factory method to
+ * Use the {@link EnrollDatePickerFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DatePickerFragment extends Fragment {
+public class EnrollDatePickerFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,7 +34,7 @@ public class DatePickerFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public DatePickerFragment() {
+    public EnrollDatePickerFragment() {
         // Required empty public constructor
     }
 
@@ -46,11 +44,11 @@ public class DatePickerFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment DatePickerFragment.
+     * @return A new instance of fragment EnrollDatePickerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static DatePickerFragment newInstance(String param1, String param2) {
-        DatePickerFragment fragment = new DatePickerFragment();
+    public static EnrollDatePickerFragment newInstance(String param1, String param2) {
+        EnrollDatePickerFragment fragment = new EnrollDatePickerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
