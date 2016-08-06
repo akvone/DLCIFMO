@@ -54,7 +54,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private static final String ARG_DAY = "day";
     private static final String ARG_MONTH = "month";
     private static final String ARG_YEAR = "year";
-    private static final int LAYOUT = R.layout.testing_registration_time_picker;
+    private static final int LAYOUT = R.layout.enroll_time_picker;
 
     // TODO: Rename and change types of parameters
     private int day;
@@ -63,7 +63,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private View view;
     private RecyclerView recyclerView;
     private Context context;
-    private CookieManager registrationCookieManager;
+    private CookieManager enrollCookieManager;
     private StringBuilder date; //Дата записи, приведённая к понятному ЦДО виду (01.09.2016)
     private BookItemAdaptor adapter;
 
@@ -214,9 +214,9 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private class LoginTask extends AsyncTask<String,Integer,Void> {
         @Override
         protected void onPreExecute() {
-            registrationCookieManager = new CookieManager();
-            registrationCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(registrationCookieManager);
+            enrollCookieManager = new CookieManager();
+            enrollCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
+            CookieHandler.setDefault(enrollCookieManager);
             showProgress(true);
         }
 
@@ -240,7 +240,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 i++;
             }
             if (!empty){
-                new RegisterTest().execute(adapter.getTimes()[start], adapter.getTimes()[start+streak]);
+                new Enroll().execute(adapter.getTimes()[start], adapter.getTimes()[start+streak]);
             }
         }
 
@@ -293,7 +293,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
             return null;
         }
     }
-    private class RegisterTest extends AsyncTask<String, Integer, Integer>{
+    private class Enroll extends AsyncTask<String, Integer, Integer>{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

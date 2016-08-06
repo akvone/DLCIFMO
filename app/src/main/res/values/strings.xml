@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">DLC IFMO</string>
 
+
     <string name="preference_file_key">my_application_preferences</string>
     <string name="preference_skip_login_key">skipLoginBoolean</string>
     <string name="preference_has_login_data_key">hasLoginData</string>

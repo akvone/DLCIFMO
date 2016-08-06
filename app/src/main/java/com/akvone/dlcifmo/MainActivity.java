@@ -1,11 +1,10 @@
 package com.akvone.dlcifmo;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -14,13 +13,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
-import com.akvone.dlcifmo.TestingRegistrationModule.DatePickerFragment;
-import com.akvone.dlcifmo.TestingRegistrationModule.TimePickerFragment;
+import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
+import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
+import com.akvone.dlcifmo.LoginModule.UserLoginTask;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
+
+import java.net.CookieManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
+
+    public static CookieManager cookieManager = new CookieManager();
 
     Toolbar toolbar;
     DrawerLayout drawer;
@@ -31,16 +36,23 @@ public class MainActivity extends AppCompatActivity
     TopStFragment topStFragment;
     Fragment enrollFragment;
     Fragment feedbackFragment;
-    DatePickerFragment datePickerFragment;
+
+    private boolean hasLoginData;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE,Context.MODE_PRIVATE);
+        hasLoginData = sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false);
         //Проверяем, пропускал ли пользователь авторизацию
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key),Context.MODE_PRIVATE);
-        if (sharedPref.getBoolean(getString(R.string.preference_skip_login_key),false)){
-
+        if (sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN,false)){
+            //Если пользователь логинился в предыдущий запуск приложения
+            if (sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false)){
+                String login = sharedPref.getString(Constants.PREF_LOGIN, null);
+                String password = sharedPref.getString(Constants.PREF_PASSWORD, null);
+                new UserLoginTask(login, password).execute(this);
+            }
         }
         else {
             startLoginActivity();
@@ -52,7 +64,7 @@ public class MainActivity extends AppCompatActivity
         initNavigationView();
 
         loadFragments();
-        getFragmentManager()
+        getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.main_activity_container, journalFragment)
                 .commit();
@@ -75,10 +87,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void loadFragments(){
-        if (false) {
-            journalFragment = BlankFragment.newInstance("Здесь будет журнал с баллами по предметам");
+        if (hasLoginData) {
+            journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = BlankFragment.newInstance("Здесь будет запись на тестирование");
+            enrollFragment = EnrollDatePickerFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();
@@ -106,42 +118,41 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         getSupportActionBar().setTitle(item.getTitle());
         if (id == R.id.gradebook) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, journalFragment)
                     .commit();
         } else if (id == R.id.change_protocol) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, changesProtocolFragment)
                     .commit();
         } else if (id == R.id.top_student) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .remove(getFragmentManager().findFragmentById(R.id.main_activity_container))
-                    .commit();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, topStFragment)
                     .commit();
         } else if (id == R.id.testing_registration) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .remove(getFragmentManager().findFragmentById(R.id.main_activity_container))
-                    .commit();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.main_activity_container, datePickerFragment)
                     .replace(R.id.main_activity_container, enrollFragment)
                     .commit();
         } else if (id == R.id.settings) {
             startActivity(new Intent(getApplicationContext(),SettingsActivity.class));
         } else if (id == R.id.feedback) {
-            getFragmentManager()
+            getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, feedbackFragment)
                     .commit();
         } else if (id == R.id.logout) {
+            //Если пользователь решил выйти, очистить его данные
+            SharedPreferences preferences = getSharedPreferences(Constants.PREF_FILE, MODE_PRIVATE);
+            preferences.edit()
+                    .putBoolean(Constants.PREF_HAS_LOGIN_DATA, false)
+                    .remove(Constants.PREF_LOGIN)
+                    .remove(Constants.PREF_PASSWORD)
+                    .remove(Constants.PREF_SKIP_LOGIN_BOOLEAN)
+                    .commit();
             startLoginActivity();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -160,7 +171,7 @@ public class MainActivity extends AppCompatActivity
     public void sendDate(int day, int month, int year) {
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_container, TimePickerFragment.newInstance(day, month, year))
+                .replace(R.id.main_activity_container, EnrollTimePickerFragment.newInstance(day, month, year))
                 .addToBackStack(null)
                 .commit();
     }
@@ -168,5 +179,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void popFragmentStack() {
         getSupportFragmentManager().popBackStack();
+    }
+
+    @Override
+    public void changeFragment(Fragment fragment) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_activity_container, fragment)
+                .addToBackStack(null)
+                .commit();
     }
 }

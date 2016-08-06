@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Paint;
+import android.preference.Preference;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
@@ -23,10 +24,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.MainActivity;
 import com.akvone.dlcifmo.R;
-
-import java.net.CookieManager;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -35,7 +35,6 @@ import static android.Manifest.permission.READ_CONTACTS;
  */
 public class LoginActivity extends AppCompatActivity{
 
-    public CookieManager cookieManager = new CookieManager();
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -58,9 +57,9 @@ public class LoginActivity extends AppCompatActivity{
         //Если мы оказались здесь, то пока
         //не введем правильные логин-пароль/не пропустим шаг с авторизацией
         //нас будет всегда бросать в это активити
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(getString(R.string.preference_skip_login_key), false);
+        editor.putBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN, false);
         editor.commit();
 
         setContentView(R.layout.activity_login);
@@ -197,9 +196,9 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     public void startMainActivity(){
-        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(getString(R.string.preference_skip_login_key), true);
+        editor.putBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN, true);
         editor.commit();
         startActivity(new Intent(new Intent(getApplicationContext(),MainActivity.class)));
         finish();

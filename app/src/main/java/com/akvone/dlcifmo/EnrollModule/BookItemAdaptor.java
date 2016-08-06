@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookItemAdaptor extends RecyclerView.Adapter<BookItemAdaptor.Holder>  {
-    String[] times = {"10:00", "10:40", "11:20", "12:00", "12:40", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20", "18:00"};
+    final String[] times = {"10:00", "10:40", "11:20", "12:00", "12:40", "13:20", "14:00", "14:40", "15:20", "16:00", "16:40", "17:20", "18:00"};
     List<Item> data = new ArrayList<>();
 
     public class Item {
@@ -38,7 +38,7 @@ public class BookItemAdaptor extends RecyclerView.Adapter<BookItemAdaptor.Holder
     }
     @Override
     public Holder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.testing_registration_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.enroll_item, parent, false);
         return new Holder(view);
     }
 

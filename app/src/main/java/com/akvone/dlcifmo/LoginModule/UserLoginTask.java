@@ -8,6 +8,8 @@ import android.text.Html;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 
+import com.akvone.dlcifmo.Constants;
+import com.akvone.dlcifmo.MainActivity;
 import com.akvone.dlcifmo.R;
 
 import org.jsoup.Jsoup;
@@ -20,7 +22,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.CookieHandler;
 import java.net.CookieManager;
+import java.net.CookieStore;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -42,10 +46,9 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
     private final String mPassword;
 
     Activity callerActivity;
-    CookieManager cookieManager;
-
-    UserLoginTask(String email, String password) {
-        mLogin = email;
+    //Из MainActivity надо логиниться, поэтому public
+    public UserLoginTask(String login, String password) {
+        mLogin = login;
         mPassword = password;
     }
 
@@ -53,8 +56,8 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
     @Override
     protected Integer doInBackground(Object... params) {
         callerActivity = (Activity) params[0];
-        cookieManager = new CookieManager();
-        java.net.CookieHandler.setDefault(cookieManager);
+        MainActivity.cookieManager = new CookieManager();
+        java.net.CookieHandler.setDefault(MainActivity.cookieManager);
 //        String activity_login = (String) params[1];
 //        String password = (String) params[2];
         String args;
@@ -100,12 +103,12 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
             }
             else {
                 SharedPreferences sharedPref = callerActivity
-                        .getSharedPreferences(callerActivity.getString(R.string.preference_file_key),
+                        .getSharedPreferences(Constants.PREF_FILE,
                                 Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean(callerActivity.getString(R.string.preference_has_login_data_key), true);
-                editor.putString(callerActivity.getString(R.string.preference_login_key), mLogin);
-                editor.putString(callerActivity.getString(R.string.preference_password_key), mPassword);
+                editor.putBoolean(Constants.PREF_HAS_LOGIN_DATA, true);
+                editor.putString(Constants.PREF_LOGIN, mLogin);
+                editor.putString(Constants.PREF_PASSWORD, mPassword);
                 editor.commit();
                 return LOGIN_SUCCESS;
             }
@@ -129,6 +132,7 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
             ((LoginActivity)callerActivity).userLoginTaskAction(integer);
         }
         else {
+//            Вызов из MainActivity
             try {
                 throw new Exception();
             } catch (Exception e) {
