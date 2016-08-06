@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.akvone.dlcifmo.JournalModule.Adapters.PointsAdapter;
 import com.akvone.dlcifmo.R;
@@ -41,8 +42,14 @@ public class PointsViewFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new PointsAdapter(subject));
+        if ((subject.getPoints() == null)||(subject.getPoints().size() == 0)){
+            TextView textView = (TextView) view.findViewById(R.id.noPointsData);
+            textView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.GONE);
+        } else {
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(new PointsAdapter(subject));
+        }
         return view;
     }
 

@@ -22,6 +22,8 @@ import android.widget.ListAdapter;
 
 import com.akvone.dlcifmo.JournalModule.Adapters.MockAdapter;
 import com.akvone.dlcifmo.JournalModule.Adapters.SubjectAdapter;
+import com.akvone.dlcifmo.LoginModule.UserLoginTask;
+import com.akvone.dlcifmo.MainActivity;
 import com.akvone.dlcifmo.R;
 
 import java.util.ArrayList;
@@ -39,9 +41,7 @@ public class JournalFragment extends Fragment {
     SubjectAdapter subjectAdapter;
 
     View view;
-    private Context context;
     private Menu optionsMenu;
-    private LoadJournalTask mLoadJournalTask;
     private boolean loadingJournal;
     private List<String> semesters = new ArrayList<>();
 
@@ -52,6 +52,14 @@ public class JournalFragment extends Fragment {
             instance = new JournalFragment();
         }
         return instance;
+    }
+
+    public static JournalFragment newInstance() {
+
+        Bundle args = new Bundle();
+        JournalFragment fragment = new JournalFragment();
+        fragment.setArguments(args);
+        return fragment;
     }
     @Override
     public void onResume() {
@@ -64,7 +72,7 @@ public class JournalFragment extends Fragment {
 
     public void updateCards(){
 
-        subjectAdapter = new SubjectAdapter(Subject.subjects, context);
+        subjectAdapter = new SubjectAdapter(Subject.subjects, getActivity());
         recyclerView.setAdapter(subjectAdapter);
     }
 
@@ -73,8 +81,8 @@ public class JournalFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         if (Subject.subjects.size() == 0) {
-            mLoadJournalTask = new LoadJournalTask(this);
-            mLoadJournalTask.execute();
+            LoadJournalTask loadJournalTask = new LoadJournalTask(this);
+            loadJournalTask.execute();
         }
         Calendar calendar = new GregorianCalendar();
         Subject.isAutumnSemester = calendar.get(Calendar.MONTH) > 5;
@@ -85,11 +93,11 @@ public class JournalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.recycleView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        recyclerView.setAdapter(new SubjectAdapter(Subject.subjects, context));
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(new SubjectAdapter(Subject.subjects, getActivity()));
         if (Subject.subjects.size() == 0)
         {
-            SharedPreferences preferences = context.getSharedPreferences(PREF_MOCK_FILE, Context.MODE_PRIVATE);
+            SharedPreferences preferences = getActivity().getSharedPreferences(PREF_MOCK_FILE, Context.MODE_PRIVATE);
             int amount = preferences.getInt(PREF_MOCK_SUBJECTS_AMOUNT, 0);
             if (amount != 0) {
                 String[] names = new String[amount];
@@ -101,7 +109,7 @@ public class JournalFragment extends Fragment {
                     exam[i] = preferences.getInt(PREF_MOCK_SUBJECT_TYPE+i, 0);
                     points[i] = preferences.getFloat(PREF_MOCK_SUBJECT_POINTS+i, -1);
                 }
-                recyclerView.setAdapter(new MockAdapter(names, exam, points, context));
+                recyclerView.setAdapter(new MockAdapter(names, exam, points, getActivity()));
             }
         }
         return view;
@@ -110,7 +118,6 @@ public class JournalFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        instance.setContext(context);
     }
 
     @Override
@@ -129,17 +136,19 @@ public class JournalFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.action_refresh:
-                mLoadJournalTask = new LoadJournalTask(this);
-                mLoadJournalTask.execute();
+                //TODO: Если перед обновлением запустить UserLoginTask, почистив куки, не будет ошибки 204
+                LoadJournalTask loadJournalTask = new LoadJournalTask(this);
+                loadJournalTask.execute();
                 return true;
             case R.id.action_change_semester:
                 semesters.clear();
                 for (int j = 1; j <= Subject.years*2; j++){
                     semesters.add(j + " семестр" + ((j == Subject.CHOSEN_SEMESTER) ? " (выбран)" : ""));
                 }
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle(R.string.action_chose_semester);
-                ListAdapter adapter = new ArrayAdapter<String>(context, android.R.layout.select_dialog_singlechoice, semesters);
+                ListAdapter adapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.select_dialog_singlechoice, semesters);
                 builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -176,9 +185,6 @@ public class JournalFragment extends Fragment {
         super.onDetach();
     }
 
-    public void setContext(Context context) {
-        this.context = context;
-    }
 
     public JournalFragment() {
         // Required empty public constructor

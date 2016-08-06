@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.Window;
 
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
+import com.akvone.dlcifmo.JournalModule.Subject;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
 import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
@@ -151,13 +152,6 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         } else if (id == R.id.logout) {
             //Если пользователь решил выйти, очистить его данные
-            SharedPreferences preferences = getSharedPreferences(Constants.PREF_FILE, MODE_PRIVATE);
-            preferences.edit()
-                    .putBoolean(Constants.PREF_HAS_LOGIN_DATA, false)
-                    .remove(Constants.PREF_LOGIN)
-                    .remove(Constants.PREF_PASSWORD)
-                    .remove(Constants.PREF_SKIP_LOGIN_BOOLEAN)
-                    .commit();
             startLoginActivity();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -168,6 +162,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void startLoginActivity(){
+        //На всякий почистим данные пользователя
+        getSharedPreferences(Constants.PREF_FILE, MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
+        //Сохранённый журнал
+        getSharedPreferences(Constants.PREF_MOCK_FILE, MODE_PRIVATE)
+                .edit()
+                .clear()
+                .apply();
+        //Журнал придётся пересоздавать под нового пользователя
+        Subject.subjects.clear();
         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         finish();
     }
