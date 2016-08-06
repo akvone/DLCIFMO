@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:icon="@drawable/ic_refresh"
+        android:id="@+id/action_refresh"
+        android:title="@string/app_name"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="100"
+        />
+    <item
+        android:icon="@drawable/ic_schedule_black_24dp"
+        android:id="@+id/action_change_semester"
+        android:title="@string/action_chose_semester"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="50"
+        />
+
+</menu>

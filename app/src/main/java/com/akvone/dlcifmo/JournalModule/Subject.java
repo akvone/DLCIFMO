@@ -20,8 +20,10 @@ public class Subject {
     private List<Points> points = new ArrayList<>();
     protected double totalPoints;
     public static List<Subject> subjects = new ArrayList<>();
-    public static final int CURRENT_SEMESTER = 4;
-
+    public static int CHOSEN_SEMESTER = 4;
+    public static int CURRENT_SEMESTER = 4;
+    public static boolean isAutumnSemester;
+    public static int years = 0; // Заполнится при получении журнала
 
     public Subject(JSONObject data) throws JSONException {
         name = data.getString("name");

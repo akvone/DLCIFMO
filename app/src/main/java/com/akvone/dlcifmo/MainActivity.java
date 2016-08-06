@@ -11,7 +11,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
@@ -111,6 +114,8 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -167,6 +172,7 @@ public class MainActivity extends AppCompatActivity
         finish();
     }
 
+    //Реализация интерфеса общения с фрагментами
     @Override
     public void sendDate(int day, int month, int year) {
         getSupportFragmentManager()

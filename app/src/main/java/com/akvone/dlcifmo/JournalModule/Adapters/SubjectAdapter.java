@@ -31,30 +31,34 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         int i = 0;
         for (Subject s :
                 data) {
-            if (s.getSemester() == Subject.CURRENT_SEMESTER) {
+            if (s.getSemester() == Subject.CHOSEN_SEMESTER) {
                 this.data.add(s);
                 //save to device
                 int type;
-                switch (s.getType()){
-                    case "Зачет":
-                        type = SUBJECT_TYPE_CREDIT;
-                        break;
-                    case "Экзамен":
-                        type = SUBJECT_TYPE_EXAM;
-                        break;
-                    case "Курсовая работа":
-                        type = SUBJECT_TYPE_COURSE;
-                        break;
-                    default:
-                        type = 0;
-                        break;
+                if (Subject.CURRENT_SEMESTER == Subject.CHOSEN_SEMESTER) {
+                    switch (s.getType()){
+                        case "Зачет":
+                            type = SUBJECT_TYPE_CREDIT;
+                            break;
+                        case "Экзамен":
+                            type = SUBJECT_TYPE_EXAM;
+                            break;
+                        case "Курсовая работа":
+                            type = SUBJECT_TYPE_COURSE;
+                            break;
+                        default:
+                            type = 0;
+                            break;
+                    }
+                    editor.putString(PREF_MOCK_SUBJECT_NAME+i, s.getName());
+                    editor.putInt(PREF_MOCK_SUBJECT_TYPE+i, type);
+                    editor.putFloat(PREF_MOCK_SUBJECT_POINTS+i++, s.getTotalPoints().floatValue());
                 }
-                editor.putString(PREF_MOCK_SUBJECT_NAME+i, s.getName());
-                editor.putInt(PREF_MOCK_SUBJECT_TYPE+i, type);
-                editor.putFloat(PREF_MOCK_SUBJECT_POINTS+i++, s.getTotalPoints().floatValue());
             }
-            editor.putInt(PREF_MOCK_SUBJECTS_AMOUNT, i);
-            editor.apply();
+            if (Subject.CURRENT_SEMESTER == Subject.CHOSEN_SEMESTER) {
+                editor.putInt(PREF_MOCK_SUBJECTS_AMOUNT, i);
+                editor.apply();
+            }
         }
 
         this.context = context;
