@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <com.akvone.dlcifmo.JournalModule.MySwipeRefreshLayout
+        android:id="@+id/swipe_refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycleView"
-        android:padding="2dp"
-        android:layout_margin="2dp"
-        />
+        android:layout_height="match_parent">
 
+        <!-- Need to wrap DragListView in another layout for
+            wrap_content to work for some reason -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-</LinearLayout>
+            <draglistview.DragListView
+                android:id="@+id/drag_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </FrameLayout>
+    </com.akvone.dlcifmo.JournalModule.MySwipeRefreshLayout>
+</FrameLayout>

@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnFragmentInteractionListener {
 
     public static CookieManager cookieManager = new CookieManager();
+    public static boolean offline = false;
 
     Toolbar toolbar;
     DrawerLayout drawer;

@@ -66,7 +66,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
 
     @Override
     public SubjectHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        //определяем содержимое RecycleView как subject_item
+        //определяем содержимое RecycleView как journal_item
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.journal_item, parent, false);
 
         return new SubjectHolder(view);
@@ -105,7 +105,7 @@ public class SubjectAdapter extends RecyclerView.Adapter<SubjectAdapter.SubjectH
         public SubjectHolder(View itemView) {
             super(itemView);
 
-            cardView = (CardView) itemView.findViewById(R.id.card_view);
+//            cardView = (CardView) itemView.findViewById(R.id.card_view);
             title = (TextView) itemView.findViewById(R.id.title);
             type = (TextView) itemView.findViewById(R.id.subjectType);
             points = (TextView) itemView.findViewById(R.id.points);

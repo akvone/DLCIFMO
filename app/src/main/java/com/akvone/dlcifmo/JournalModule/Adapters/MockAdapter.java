@@ -77,7 +77,7 @@ public class MockAdapter extends RecyclerView.Adapter<MockAdapter.MockHolder>{
         public MockHolder(View itemView) {
             super(itemView);
 
-            cardView = (CardView) itemView.findViewById(R.id.card_view);
+//            cardView = (CardView) itemView.findViewById(R.id.card_view);
             title = (TextView) itemView.findViewById(R.id.title);
             type = (TextView) itemView.findViewById(R.id.subjectType);
             points = (TextView) itemView.findViewById(R.id.points);

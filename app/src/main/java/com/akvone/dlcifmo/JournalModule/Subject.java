@@ -1,6 +1,9 @@
 package com.akvone.dlcifmo.JournalModule;
 
 
+import android.util.Log;
+import android.widget.Toast;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -9,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Subject {
+    public int id;
     private final double LIMIT = 60;
     private String name;
     private int semester;
@@ -19,7 +23,7 @@ public class Subject {
     private Marks marks;
     private List<Points> points = new ArrayList<>();
     protected double totalPoints;
-    public static List<Subject> subjects = new ArrayList<>();
+    public static ArrayList<Subject> subjects = new ArrayList<>();
     public static int CHOSEN_SEMESTER = 4;
     public static int CURRENT_SEMESTER = 4;
     public static boolean isAutumnSemester;
@@ -113,5 +117,30 @@ public class Subject {
 
     public List<Points> getPoints() {
         return points;
+    }
+
+    public static void parseJSONJournal(JSONObject journal){
+        try {
+            Log.d("Parsing", "begin");
+            JSONArray years = journal.getJSONArray("years");
+            Subject.CHOSEN_SEMESTER = years.length()*2 - (Subject.isAutumnSemester ? 1 : 0);
+            Subject.CURRENT_SEMESTER = Subject.CHOSEN_SEMESTER;
+            Subject.years = years.length();
+            Log.d("Subject", "CHOSEN_SEMESTER is " + Subject.CHOSEN_SEMESTER);
+            for (int j = 0; j < years.length(); j++)
+            {
+                JSONObject currentYear = years.getJSONObject(j);
+                JSONArray subjects = currentYear.getJSONArray("subjects");
+                for (int i = 0; i<subjects.length(); i++)
+                {
+                    Subject s = new Subject(subjects.getJSONObject(i));
+                    s.id = i;
+                    Subject.subjects.add(new Subject(subjects.getJSONObject(i)));
+                }
+            }
+            Log.d("Parsing", "end");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -52,6 +52,12 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
         mPassword = password;
     }
 
+    @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        MainActivity.offline = true;
+
+    }
 
     @Override
     protected Integer doInBackground(Object... params) {
@@ -115,6 +121,7 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
 
         } catch (Exception e){
             e.printStackTrace();
+            cancel(true);
         }
 
 //        for (HttpCookie c :
@@ -128,6 +135,7 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
 
     @Override
     protected void onPostExecute(Integer integer) {
+        MainActivity.offline = false;
         if (callerActivity instanceof LoginActivity) {
             ((LoginActivity)callerActivity).userLoginTaskAction(integer);
         }
