@@ -121,7 +121,9 @@ public class Subject {
 
     public static void parseJSONJournal(JSONObject journal){
         try {
-            Log.d("Parsing", "begin");
+            Log.d("Parsing journal", "begin");
+            Subject.subjects.clear();
+            //or null? TODO
             JSONArray years = journal.getJSONArray("years");
             Subject.CHOSEN_SEMESTER = years.length()*2 - (Subject.isAutumnSemester ? 1 : 0);
             Subject.CURRENT_SEMESTER = Subject.CHOSEN_SEMESTER;
@@ -138,7 +140,7 @@ public class Subject {
                     Subject.subjects.add(new Subject(subjects.getJSONObject(i)));
                 }
             }
-            Log.d("Parsing", "end");
+            Log.d("Parsing journal", "end");
         } catch (JSONException e) {
             e.printStackTrace();
         }

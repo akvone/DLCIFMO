@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -27,6 +28,9 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject eregister) {
+        if (eregister != null){
+            journalFragment.saveJournal(eregister);
+        }
         Subject.parseJSONJournal(eregister);
         journalFragment.setSwipeRefreshState(false);
         journalFragment.setLoadingJournal(false);
@@ -67,18 +71,18 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
             int rc;
             StringBuilder sb = new StringBuilder();
             Log.d("Https Response code", resp + "");
-            try {
-                while ((rc = reader.read(buffer)) != -1)
-                    sb.append(buffer, 0, rc);
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            while ((rc = reader.read(buffer)) != -1)
+                sb.append(buffer, 0, rc);
+            reader.close();
             object = null;
-            Log.d("Parse", "Really begin");
             object = new JSONObject(sb.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (JSONException e) {
+//            e.printStackTrace();
+            Log.d("Parse journal", "JSON creating failure");
+            cancel(true);
+        } catch (IOException e){
+//            e.printStackTrace();
+            Log.d("Journal parse", "reader failure");
             cancel(true);
         }
         return object;

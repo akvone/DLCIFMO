@@ -10,7 +10,9 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.JsonWriter;
 import android.util.Log;
+import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,6 +28,14 @@ import com.akvone.dlcifmo.JournalModule.Adapters.ItemAdapter;
 import com.akvone.dlcifmo.JournalModule.Adapters.SubjectAdapter;
 import com.akvone.dlcifmo.R;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -109,6 +119,20 @@ public class JournalFragment extends Fragment {
         return view;
     }
 
+    public void saveJournal(JSONObject journal){
+        Log.d("Save journal", "begin");
+        try {
+            FileOutputStream out = getContext().openFileOutput("journal.json", Context.MODE_PRIVATE);
+            out.write(journal.toString().getBytes());
+//            out.flush();
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("Save journal", "fail");
+        }
+        Log.d("Save journal", "end");
+    }
+
     public void setupListRecyclerView() {
         mItemArray.clear();
         int i = 0;
@@ -158,7 +182,11 @@ public class JournalFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
+        Log.d("journal", "Fragment onCreate");
+
         if (Subject.subjects.size() == 0) {
+//            new LoadSavedJournal(this).execute();
             LoadJournalTask loadJournalTask = new LoadJournalTask(this);
             loadJournalTask.execute();
         }
