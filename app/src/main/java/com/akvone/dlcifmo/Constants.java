@@ -18,7 +18,6 @@ public class Constants {
 
     public static final int SUBJECT_TYPE_CREDIT = 1; //зачёт
     public static final int SUBJECT_TYPE_EXAM = 2;
-    public static final int SUBJECT_TYPE_PRACTICE = 3;
     public static final int SUBJECT_TYPE_COURSE = 4;
 
 //    <string name="preference_file_key">my_application_preferences</string>

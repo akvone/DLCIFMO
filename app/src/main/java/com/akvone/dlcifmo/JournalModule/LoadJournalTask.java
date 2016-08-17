@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.akvone.dlcifmo.LoginModule.UserLoginTask;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,9 +31,15 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
     @Override
     protected void onPostExecute(JSONObject eregister) {
         if (eregister != null){
-            journalFragment.saveJournal(eregister);
+            try {
+                if (Journal.getInstance() == null){
+                    Journal.newInstance(eregister);
+                } else Journal.getInstance().update(eregister);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
-        Subject.parseJSONJournal(eregister);
+//        Journal.newInstance(eregister);
         journalFragment.setSwipeRefreshState(false);
         journalFragment.setLoadingJournal(false);
 

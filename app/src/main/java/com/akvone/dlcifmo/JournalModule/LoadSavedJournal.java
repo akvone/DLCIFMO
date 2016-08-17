@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.concurrent.ForkJoinPool;
 
 /**
  * Created by 1 on 08.08.2016.
@@ -54,8 +55,20 @@ public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
 
     @Override
     protected void onPostExecute(JSONObject object) {
+        JournalFragment.journal = object;
         Log.d("Load saved journal", "end");
-        Subject.parseJSONJournal(object);
+//        Subject.parseSavedJournal(JournalFragment.journal);
+        if (object == null) return;
+        if (Journal.getInstance() == null){
+            Journal.newInstance(object);
+        } else {
+            //Is this even possible?
+            try {
+                Journal.getInstance().update(object);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         JournalFragment.getInstance().setupListRecyclerView();
     }
 

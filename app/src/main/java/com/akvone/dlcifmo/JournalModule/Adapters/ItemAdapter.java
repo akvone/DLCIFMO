@@ -74,36 +74,18 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
 //            }
         }
 //        holder.cardView.setOnClickListener(new onCardClickListener(item));
-        holder.type.setText(item.getType());
+        holder.type.setText(item.getType() + "");
     }
 
     @Override
     public long getItemId(int position) {
-        return mItemList.get(position).id;
-
+        return mItemList.get(position).getId();
 //        return mItemList.indexOf(mItemList.get(position));
 //        ?????
 //        return position;
     }
-    private class onCardClickListener implements  CardView.OnClickListener{
-        Subject subject;
-        public onCardClickListener(Subject item){
-            subject = item;
-        }
-        @Override
-        public void onClick(View v) {
-            //support FA
-            FragmentActivity activity = (FragmentActivity) v.getContext();
-            activity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_activity_container, PointsViewFragment.getInstance(v.getContext(), subject))
-                    .addToBackStack(null)
-                    .commit();
-        }
-    }
 
     public class ViewHolder extends DragItemAdapter<Subject, ItemAdapter.ViewHolder>.ViewHolder {
-        CardView cardView;
         TextView title;
         TextView type;
         TextView points;
@@ -112,7 +94,6 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
         public ViewHolder(final View itemView) {
             super(itemView, mGrabHandleId);
 
-//            cardView = (CardView) itemView.findViewById(R.id.card_view);
             title = (TextView) itemView.findViewById(R.id.title);
             type = (TextView) itemView.findViewById(R.id.subjectType);
             points = (TextView) itemView.findViewById(R.id.points);
@@ -136,12 +117,12 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
                         .addToBackStack(null)
                         .commit();
             }
-            Toast.makeText(view.getContext(), "Item clicked", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(view.getContext(), "Item clicked", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public boolean onItemLongClicked(View view) {
-            Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(view.getContext(), "Item long clicked", Toast.LENGTH_SHORT).show();
             return true;
         }
     }

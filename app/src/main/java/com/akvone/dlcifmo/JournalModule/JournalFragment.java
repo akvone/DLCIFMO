@@ -10,9 +10,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.JsonWriter;
 import android.util.Log;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -25,20 +23,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akvone.dlcifmo.JournalModule.Adapters.ItemAdapter;
-import com.akvone.dlcifmo.JournalModule.Adapters.SubjectAdapter;
 import com.akvone.dlcifmo.R;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import draglistview.DragItem;
@@ -48,11 +42,12 @@ public class JournalFragment extends Fragment {
 
 
     private static final int LAYOUT = R.layout.journal_fragment;
+    public static JSONObject journal;
 
     MySwipeRefreshLayout mRefreshLayout;
     DragListView mDragListView;
-    SubjectAdapter subjectAdapter;
     private ArrayList<Subject> mItemArray = new ArrayList<>();
+    private String year;
 
     View view;
     private Menu optionsMenu;
@@ -60,6 +55,153 @@ public class JournalFragment extends Fragment {
     private List<String> semesters = new ArrayList<>();
 
     public static JournalFragment instance = null;
+
+    public static JournalFragment getInstance(){
+        if (instance == null){
+            instance = new JournalFragment();
+        }
+        return instance;
+    }
+
+    public static JournalFragment newInstance() {
+
+        Bundle args = new Bundle();
+        JournalFragment fragment = new JournalFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public void saveJournal(JSONObject journal){
+        Log.d("Save journal", "begin");
+        //пробежаться по JSON и воткнуть актуальные веса.
+        if (journal == null) return;
+        try {
+            JSONArray years = journal.getJSONArray("years");
+            for (int i = 0; i < years.length(); i++) {
+                JSONArray subs = years.getJSONObject(i).getJSONArray("subjects");
+                for (int j = 0; j < subs.length(); j++) {
+
+                    JSONObject subject = subs.getJSONObject(j);
+                    int id = subject.getInt("id");
+                    int weight = Journal.getInstance().getSubject(id).weight;
+                    subject.put("weight", weight);
+                }
+            }
+            FileOutputStream out = getContext().openFileOutput("journal.json", Context.MODE_PRIVATE);
+            out.write(journal.toString().getBytes());
+            out.close();
+        } catch (JSONException e) {
+            Log.d("Save journal", "fail");
+            e.printStackTrace();
+        } catch (IOException e){
+            Log.d("Save journal", "file write fail");
+        }
+        Log.d("Save journal", "end");
+    }
+
+    public void setupListRecyclerView() {
+        //или стоит его изменить?
+
+        if (Journal.getInstance() != null) {
+            ArrayList<Subject> items = Journal.getInstance().getYear(Journal.chosenYear).getSemester(Journal.chosenSemester);
+            mItemArray = new ArrayList<>(items.size());
+            mItemArray.ensureCapacity(items.size());
+            for (int i = 0; i < items.size(); i++) {
+                for (int j = 0; j < items.size(); j++) {
+                    if (items.get(j).weight == i){
+                        mItemArray.add(i, items.get(j));
+                        break;
+                    }
+                }
+            }
+        }
+        mDragListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        ItemAdapter adapter = new ItemAdapter(mItemArray, R.layout.journal_item, R.id.points, false);
+        mDragListView.setAdapter(adapter, true);
+        mDragListView.setCanDragHorizontally(false);
+        mDragListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.journal_item));
+    }
+
+
+    public void updateCards(){
+
+        LoadJournalTask loadJournalTask = new LoadJournalTask(JournalFragment.getInstance());
+        loadJournalTask.execute();
+//
+//        subjectAdapter = new SubjectAdapter(Subject.subjects, getActivity());
+//        mRecyclerView.setAdapter(subjectAdapter);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        this.optionsMenu = menu;
+        inflater.inflate(R.menu.journal_menu, menu);
+        if (loadingJournal){
+            setSwipeRefreshState(true);
+        } else {
+            setSwipeRefreshState(false);
+        }
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_change_semester:
+                Journal j = Journal.getInstance();
+                semesters.clear();
+                for (int i = 0; i < j.countYears(); i++){
+                    Journal.Year y = j.getYear(i);
+                    semesters.add(y.getSemesters().get(0).getNumber() + " семестр " + y.getName() +
+                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 0) ? "выбран" : ""));
+                    semesters.add(y.getSemesters().get(1).getNumber() + " семестр " + y.getName() +
+                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 1) ? "выбран" : ""));
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(R.string.action_chose_semester);
+                ListAdapter adapter = new ArrayAdapter<String>(getActivity(),
+                        android.R.layout.select_dialog_singlechoice, semesters);
+                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Journal.chosenSemester = (which) % 2;
+                        Journal.chosenYear = which / 2;
+                        Log.d("Subject", "Selected semester: " + (which + 1));
+                        setupListRecyclerView();
+                    }
+                });
+                builder.create().show();
+                //Change adapter
+//                mLoadJournalTask = new LoadJournalTask(this);
+//                mLoadJournalTask.execute();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*
+     * Lifecycle overrides
+     */
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        Log.d("journal", "Fragment onCreate");
+
+        if (Journal.getInstance() == null) {
+//            new LoadSavedJournal(this).execute();
+            LoadJournalTask loadJournalTask = new LoadJournalTask(this);
+            loadJournalTask.execute();
+        }
+    }
 
     @Nullable
     @Override
@@ -73,12 +215,24 @@ public class JournalFragment extends Fragment {
             public void onItemDragStarted(int position) {
                 //Если начнём перетаскивать итем при включеном Refresh, получим мочу
                 mRefreshLayout.setEnabled(false);
-                Toast.makeText(mDragListView.getContext(), "Start - position: " + position, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(mDragListView.getContext(), "Start - position: " + position, Toast.LENGTH_SHORT).show();
             }
             @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
                 mRefreshLayout.setEnabled(true);
-                Toast.makeText(mDragListView.getContext(), "End - position: " + toPosition, Toast.LENGTH_SHORT).show();
+                //set weight to subject
+                //Адаптер сам меняет порядок предметов в mItemArray
+                //Значит, weight можно положить как item.position
+                //Или от него можно отказаться, оставив id для синхронизации с загруженным
+                //а сохранять сортированый список
+                //Сохранять сортированый список идея так себе, ибо
+                //a) тыкать JSON
+                //б) сортировка может и потеряться
+                for (int i = 0; i <= ((fromPosition > toPosition) ? fromPosition : toPosition); i++) {
+                    mItemArray.get(i).weight = i;
+                }
+                Journal.getInstance().setSemesterItems(mItemArray);
+//                Toast.makeText(mDragListView.getContext(), "End - position: " + toPosition, Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -119,126 +273,21 @@ public class JournalFragment extends Fragment {
         return view;
     }
 
-    public void saveJournal(JSONObject journal){
-        Log.d("Save journal", "begin");
-        try {
-            FileOutputStream out = getContext().openFileOutput("journal.json", Context.MODE_PRIVATE);
-            out.write(journal.toString().getBytes());
-//            out.flush();
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d("Save journal", "fail");
-        }
-        Log.d("Save journal", "end");
-    }
-
-    public void setupListRecyclerView() {
-        mItemArray.clear();
-        int i = 0;
-        for (Subject s :
-                Subject.subjects) {
-            if (s.getSemester() == Subject.CHOSEN_SEMESTER){
-                s.id = i++;
-                mItemArray.add(s);
-            }
-        }
-        mDragListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemAdapter adapter = new ItemAdapter(mItemArray, R.layout.journal_item, R.id.points, false);
-        mDragListView.setAdapter(adapter, true);
-        mDragListView.setCanDragHorizontally(false);
-        mDragListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.journal_item));
-    }
-
-    public static JournalFragment getInstance(){
-        if (instance == null){
-            instance = new JournalFragment();
-        }
-        return instance;
-    }
-
-    public static JournalFragment newInstance() {
-
-        Bundle args = new Bundle();
-        JournalFragment fragment = new JournalFragment();
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onResume() {
         super.onResume();
     }
-    public void updateCards(){
 
-        LoadJournalTask loadJournalTask = new LoadJournalTask(JournalFragment.getInstance());
-        loadJournalTask.execute();
-//
-//        subjectAdapter = new SubjectAdapter(Subject.subjects, getActivity());
-//        mRecyclerView.setAdapter(subjectAdapter);
+    @Override
+    public void onDestroy() {
+        //save journal
+        saveJournal(journal);
+        super.onDestroy();
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-        Log.d("journal", "Fragment onCreate");
-
-        if (Subject.subjects.size() == 0) {
-//            new LoadSavedJournal(this).execute();
-            LoadJournalTask loadJournalTask = new LoadJournalTask(this);
-            loadJournalTask.execute();
-        }
-        Calendar calendar = new GregorianCalendar();
-        Subject.isAutumnSemester = calendar.get(Calendar.MONTH) > 5;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-    }
-
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        this.optionsMenu = menu;
-        inflater.inflate(R.menu.journal_menu, menu);
-        if (loadingJournal){
-            setSwipeRefreshState(true);
-        } else {
-            setSwipeRefreshState(false);
-        }
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_change_semester:
-                semesters.clear();
-                for (int j = 1; j <= Subject.years*2; j++){
-                    semesters.add(j + " семестр" + ((j == Subject.CHOSEN_SEMESTER) ? " (выбран)" : ""));
-                }
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.action_chose_semester);
-                ListAdapter adapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.select_dialog_singlechoice, semesters);
-                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Subject.CHOSEN_SEMESTER = which + 1;
-                        Log.d("Subject", "Selected semester: " + (which +1));
-                        setupListRecyclerView();
-                    }
-                });
-                builder.create().show();
-                //Change adapter
-//                mLoadJournalTask = new LoadJournalTask(this);
-//                mLoadJournalTask.execute();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
+    public void onDetach() {
+        super.onDetach();
     }
 
     public void setSwipeRefreshState(final boolean refreshing) {
@@ -254,22 +303,12 @@ public class JournalFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+    public void setLoadingJournal(boolean loadingJournal) {
+        this.loadingJournal = loadingJournal;
     }
-
-    public JournalFragment() {
-        // Required empty public constructor
-    }
-
 
     public List<String> getSemesters() {
         return semesters;
-    }
-
-    public void setLoadingJournal(boolean loadingJournal) {
-        this.loadingJournal = loadingJournal;
     }
 
     private static class MyDragItem extends DragItem {
@@ -288,5 +327,94 @@ public class JournalFragment extends Fragment {
             ((TextView) dragView.findViewById(R.id.points)).setText(points);
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.colorPrimary));
         }
+
+
+    }
+
+//    private class JournalWriter{
+//        //Это, похоже, занмает 3 секунды, да ещё и не работает
+//        private JsonWriter writer;
+//        private OutputStream out;
+////        "years":[{
+////            "group":"0000",
+////            "studyyear":"2012/2013",
+////            "subjects":[{
+////                "name":"Предмет",
+////                "semester":"1",
+////                "marks":[{
+////                    "mark":"зачет",
+////                    "markdate":"01.01.2013",
+////                    "worktype":"Зачет"
+////                }],
+////                "points":[{
+////                    "variable":"Семестр 1",
+////                    "max":"100", "limit":"60", "value":"80"
+////                }]
+//
+//
+//        public JournalWriter(OutputStream out) throws IOException{
+//            this.out = out;
+//            writer = new JsonWriter(new OutputStreamWriter(out, "Windows-1251"));
+//
+//        }
+//        public void write() throws IOException{
+//            String oldYear = "";
+//            writer.setIndent("  ");
+//            writer.beginObject(); // core object
+//            writer.name("years").beginArray();
+//            for (Subject s :
+//                    Subject.subjects) {
+//                if (!oldYear.equals(s.getStudyYear())){
+//                    if (!oldYear.equals("")){
+//                        writer.endArray(); //end of subject array
+//                        writer.endObject(); // end of one year
+//                    }
+//                    oldYear = s.getStudyYear();
+//                    writer.beginObject(); //begin of new year
+//                    writer.name("group").value(s.getGroup());
+//                    writer.name("studyyear").value(s.getStudyYear());
+//                    writer.name("subjects").beginArray();
+//                }
+//                writeSubject(s);
+//            }
+//            writer.endArray(); //end year array
+//            writer.endObject(); //end core object
+//            writer.flush();
+//            writer.close();
+//        }
+//
+//        private void writeSubject(Subject s) throws IOException{
+//            writer.beginObject();
+//            writer.name("name").value(s.getName());
+//            writer.name("semester").value(s.getSemester() + "");
+//            writer.name("marks").beginArray();
+//            for (Subject.Marks m :
+//                    s.getMarks()) {
+//                writer.beginObject();
+//                writer.name("mark").value(m.getMark());
+//                writer.name("markdate").value(m.getMarkDate());
+//                writer.name("worktype").value(m.getTp());
+//                writer.endObject();
+//            }
+//            writer.endArray();
+//            if (s.getPoints().size() != 0){
+//                writer.name("points").beginArray();
+//                for (Subject.Points p :
+//                        s.getPoints()) {
+//                    writer.beginObject();
+//                    writer.name("variable").value(p.getVariable());
+//                    writer.name("max").value(p.getMax());
+//                    writer.name("limit").value(p.getLimit());
+//                    writer.name("value").value(p.getValue());
+//                    writer.endObject();
+//                }
+//                writer.endArray();
+//            }
+//            writer.endObject();
+//        }
+//    }
+
+    public JournalFragment() {
+        // Required empty public constructor
     }
 }
