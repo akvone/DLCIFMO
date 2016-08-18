@@ -16,6 +16,13 @@ public class Constants {
     public static final String PREF_MOCK_SUBJECT_POINTS = "points";
     public static final String PREF_MOCK_SUBJECTS_AMOUNT = "amount";
 
+    public static final String CURRENT_VERSION = "0.2";
+    public static final String GITHUB_URL = "https://github.com/akvone/DLCIFMO";
+    //TODO: change this email to application corporative vk group
+    public static final String VK_URL = "https://vk.com/overhearitmo";
+    //TODO: change this email to application corporative email
+    public static final String CONTACT_MAIL = "akvone@mail.ru";
+
     public static final int SUBJECT_TYPE_CREDIT = 1; //зачёт
     public static final int SUBJECT_TYPE_EXAM = 2;
     public static final int SUBJECT_TYPE_COURSE = 4;

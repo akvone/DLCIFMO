@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="version">Версия</string>
+    <string name="about_itmo_university">Университет Итмо</string>
+    <string name="about_app_name">Центр Дистанционного Обучения</string>
+    <string name="about_contact_us">Связаться с нами</string>
+</resources>
