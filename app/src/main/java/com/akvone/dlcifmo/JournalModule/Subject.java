@@ -108,7 +108,7 @@ public class Subject {
                     case "Экзамен":
                         type |= Constants.SUBJECT_TYPE_EXAM;
                         break;
-                    default: //TODO get course string
+                    case "Курсовая работа":
                         type |= Constants.SUBJECT_TYPE_COURSE;
                         break;
                 }
