@@ -23,7 +23,7 @@
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="Настройки" />
         <item
-            android:id="@+id/feedback"
+            android:id="@+id/about"
             android:icon="@drawable/ic_accessible_black_24dp"
             android:title="О разработчиках" />
         <item

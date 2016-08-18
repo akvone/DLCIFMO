@@ -11,14 +11,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.Window;
 
-import com.akvone.dlcifmo.JournalModule.JournalFragment;
-import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.JournalModule.Subject;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
@@ -50,8 +44,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("journal", "Activity onCreate");
-        new LoadSavedJournal(this).execute();
+//        Log.d("journal", "Activity onCreate");
+//        new LoadSavedJournal(this).execute();
         SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE,Context.MODE_PRIVATE);
         hasLoginData = sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false);
         //Проверяем, пропускал ли пользователь авторизацию
@@ -75,8 +69,9 @@ public class MainActivity extends AppCompatActivity
         loadFragments();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_container, journalFragment)
+                .replace(R.id.main_activity_container, topStFragment)
                 .commit();
+//        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
     }
 
     private void initDrawer() {
@@ -97,7 +92,7 @@ public class MainActivity extends AppCompatActivity
 
     public void loadFragments(){
         if (hasLoginData) {
-            journalFragment = JournalFragment.getInstance();
+            journalFragment = BlankFragment.newInstance("Вместо Максима");
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
             enrollFragment = EnrollDatePickerFragment.newInstance();
         }
@@ -150,11 +145,8 @@ public class MainActivity extends AppCompatActivity
                     .commit();
         } else if (id == R.id.settings) {
             startActivity(new Intent(getApplicationContext(),SettingsActivity.class));
-        } else if (id == R.id.feedback) {
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.main_activity_container, feedbackFragment)
-                    .commit();
+        } else if (id == R.id.about) {
+            startActivity(new Intent(getApplicationContext(),AboutActivity.class));
         } else if (id == R.id.logout) {
             //Если пользователь решил выйти, очистить его данные
             startLoginActivity();
