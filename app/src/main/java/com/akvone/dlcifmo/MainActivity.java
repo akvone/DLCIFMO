@@ -11,8 +11,11 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
+import com.akvone.dlcifmo.JournalModule.JournalFragment;
+import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.JournalModule.Subject;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
@@ -44,8 +47,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        Log.d("journal", "Activity onCreate");
-//        new LoadSavedJournal(this).execute();
+        Log.d("journal", "Activity onCreate");
+        new LoadSavedJournal(this).execute();
         SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE,Context.MODE_PRIVATE);
         hasLoginData = sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false);
         //Проверяем, пропускал ли пользователь авторизацию
@@ -69,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         loadFragments();
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.main_activity_container, topStFragment)
+                .replace(R.id.main_activity_container, journalFragment)
                 .commit();
 //        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
     }
@@ -92,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
     public void loadFragments(){
         if (hasLoginData) {
-            journalFragment = BlankFragment.newInstance("Вместо Максима");
+            journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
             enrollFragment = EnrollDatePickerFragment.newInstance();
         }
@@ -164,13 +167,6 @@ public class MainActivity extends AppCompatActivity
                 .edit()
                 .clear()
                 .apply();
-        //Сохранённый журнал
-        getSharedPreferences(Constants.PREF_MOCK_FILE, MODE_PRIVATE)
-                .edit()
-                .clear()
-                .apply();
-        //Журнал придётся пересоздавать под нового пользователя
-        Subject.subjects.clear();
         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         finish();
     }
