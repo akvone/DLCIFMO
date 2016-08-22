@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.JournalModule.Subject;
@@ -47,12 +48,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("journal", "Activity onCreate");
-        new LoadSavedJournal(this).execute();
+        //Проверяем, пропускал ли пользователь авторизацию
         SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE,Context.MODE_PRIVATE);
         hasLoginData = sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false);
-        //Проверяем, пропускал ли пользователь авторизацию
-        if (sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN,false)){
+        if ((sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN,false))&&(hasLoginData)){
             //Если пользователь логинился в предыдущий запуск приложения
             if (sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false)){
                 String login = sharedPref.getString(Constants.PREF_LOGIN, null);
@@ -62,7 +61,10 @@ public class MainActivity extends AppCompatActivity
         }
         else {
             startLoginActivity();
+            return;
         }
+        Log.d("journal", "Activity onCreate");
+        new LoadSavedJournal(this).execute();
 
         setContentView(R.layout.activity_main);
         initToolbar();
@@ -97,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         if (hasLoginData) {
             journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = EnrollDatePickerFragment.newInstance();
+            enrollFragment = EnrollMainFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();

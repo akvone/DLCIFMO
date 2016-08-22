@@ -5,9 +5,13 @@
     <color name="colorItmoLogoBlue">#1e51a4</color>
 
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303f9f</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="colorClosedSubject">#6bfa66</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#EC0B43</color>
+    <!--<color name="colorPrimary">#333399</color>-->
+    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <!--<color name="colorAccent">#EC0B43</color>-->
+    <color name="colorClosedSubject">#388E3C</color>
     <color name="colorBlack">#191919</color>
     <color name="list_item_background">#AACCCCCC</color>
+    <!--<color name="list_item_background">#AACCCCCC</color>-->
 </resources>

@@ -17,6 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_marginTop="8dp"
         android:text="Позиция в рейтинге"
         android:id="@+id/textView5"
         android:allowUndo="false" />
@@ -26,7 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="103 из 257"
+        android:text="50 из 99"
         android:id="@+id/textView6" />
 
     <TextView

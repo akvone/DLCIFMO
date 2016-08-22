@@ -16,6 +16,7 @@
 
 package com.akvone.dlcifmo.JournalModule.Adapters;
 
+import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.CardView;
@@ -26,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.JournalModule.PointsViewFragment;
 import com.akvone.dlcifmo.JournalModule.Subject;
 import com.akvone.dlcifmo.R;
@@ -38,6 +40,7 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
 
     private int mLayoutId;
     private int mGrabHandleId;
+    private Context context;
 
     public ItemAdapter(ArrayList<Subject> list, int layoutId, int grabHandleId, boolean dragOnLongPress) {
         super(dragOnLongPress);
@@ -49,8 +52,8 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(mLayoutId, parent, false);
-
+        context = parent.getContext();
+        View view = LayoutInflater.from(context).inflate(mLayoutId, parent, false);
         return new ViewHolder(view);
     }
 
@@ -67,6 +70,10 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
         holder.points.setText(s);
         holder.subject = item;
         if (item.isClosed()){
+//            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.colorClosedSubject));
+            holder.title.setTextColor(context.getResources().getColor(R.color.colorClosedSubject));
+            holder.points.setTextColor(context.getResources().getColor(R.color.colorClosedSubject));
+            holder.type.setTextColor(context.getResources().getColor(R.color.colorClosedSubject));
 //                holder.cardView.setBackgroundColor(context.getResources().getColor(R.color.closedSubject, null));
 //            holder.cardView.setCardBackgroundColor(context.getResources().getColor(R.color.colorClosedSubject));
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -74,7 +81,23 @@ public class ItemAdapter extends DragItemAdapter<Subject, ItemAdapter.ViewHolder
 //            }
         }
 //        holder.cardView.setOnClickListener(new onCardClickListener(item));
-        holder.type.setText(item.getType() + "");
+        switch (item.getType()) {
+            case Constants.SUBJECT_TYPE_CREDIT:
+                holder.type.setText(R.string.subjectTypeCredit);
+                break;
+            case Constants.SUBJECT_TYPE_EXAM:
+                holder.type.setText(R.string.subjectTypeExam);
+                break;
+            case Constants.SUBJECT_TYPE_COURSE:
+                holder.type.setText(R.string.subjectTypeCourse);
+                break;
+            case Constants.SUBJECT_TYPE_COURSE|Constants.SUBJECT_TYPE_EXAM:
+                holder.type.setText(R.string.subjectTypeExam + ", " + R.string.subjectTypeCourse);
+                break;
+            default:
+                holder.type.setText(R.string.subjectTypeCredit);
+                break;
+        }
     }
 
     @Override

@@ -4,4 +4,8 @@
     <string name="about_itmo_university">Университет Итмо</string>
     <string name="about_app_name">Центр Дистанционного Обучения</string>
     <string name="about_contact_us">Связаться с нами</string>
+    <string name="subjectTypeCredit">Зачёт</string>
+    <string name="subjectTypeExam">Экзамен</string>
+    <string name="subjectTypeCourse">Курсовая работа</string>
+
 </resources>

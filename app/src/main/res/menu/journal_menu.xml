@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:icon="@drawable/ic_schedule_black_24dp"
+        android:icon="@drawable/ic_calendar_blank"
         android:id="@+id/action_change_semester"
         android:title="@string/action_chose_semester"
         app:showAsAction="ifRoom"
