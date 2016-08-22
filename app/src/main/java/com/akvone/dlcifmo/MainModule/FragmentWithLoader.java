@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo;
+package com.akvone.dlcifmo.MainModule;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;

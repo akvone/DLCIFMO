@@ -4,13 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.app.Application;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Paint;
-import android.preference.Preference;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
@@ -25,10 +21,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.akvone.dlcifmo.Constants;
-import com.akvone.dlcifmo.MainActivity;
+import com.akvone.dlcifmo.MainModule.MainActivity;
 import com.akvone.dlcifmo.R;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A activity_login screen that offers activity_login via email/password.
@@ -43,7 +37,7 @@ public class LoginActivity extends AppCompatActivity{
     /**
      * Keep track of the activity_login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private CheckLoginTask mAuthTask = null;
 
     // UI references.
     private EditText mLoginView;
@@ -57,9 +51,9 @@ public class LoginActivity extends AppCompatActivity{
         //Если мы оказались здесь, то пока
         //не введем правильные логин-пароль/не пропустим шаг с авторизацией
         //нас будет всегда бросать в это активити
-        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN, false);
+        editor.putBoolean(Constants.PREF_SKIP_LOGIN, false);
         editor.commit();
 
         setContentView(R.layout.activity_login);
@@ -135,7 +129,7 @@ public class LoginActivity extends AppCompatActivity{
             // Show a progress spinner, and kick off a background task to
             // perform the user activity_login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(login, password);
+            mAuthTask = new CheckLoginTask(login, password);
             mAuthTask.execute(this);
         }
     }
@@ -185,10 +179,10 @@ public class LoginActivity extends AppCompatActivity{
         mAuthTask = null;
         showProgress(false);
         switch (answer){
-            case UserLoginTask.LOGIN_SUCCESS:
+            case CheckLoginTask.LOGIN_SUCCESS:
                 startMainActivity();
                 break;
-            case UserLoginTask.PASSWORD_IS_INCORRECT:
+            case CheckLoginTask.PASSWORD_IS_INCORRECT:
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
                 break;
@@ -196,9 +190,9 @@ public class LoginActivity extends AppCompatActivity{
     }
 
     public void startMainActivity(){
-        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE, Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN, true);
+        editor.putBoolean(Constants.PREF_SKIP_LOGIN, true);
         editor.commit();
         startActivity(new Intent(new Intent(getApplicationContext(),MainActivity.class)));
         finish();

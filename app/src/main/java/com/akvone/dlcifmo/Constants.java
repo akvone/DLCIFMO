@@ -4,11 +4,23 @@ package com.akvone.dlcifmo;
  * Created by 1 on 05.08.2016.
  */
 public class Constants {
+
+    //Название файла, который содержит данные залогиневшегося пользователя.
+    //После выхода из аккаунта необходимо удалять.
+    public static final String PREF_CURRENT_USER_DATA_FILE = "currentUserAppPreferences";
+
     public static final String PREF_LOGIN = "login";
     public static final String PREF_PASSWORD = "password";
-    public static final String PREF_FILE = "my_application_preferences";
-    public static final String PREF_SKIP_LOGIN_BOOLEAN = "skipLoginBoolean";
-    public static final String PREF_HAS_LOGIN_DATA = "hasLoginData";
+    public static final String PREF_SKIP_LOGIN = "skipLoginBoolean";
+    public static final String PREF_IS_FULL_MODE = "hasLoginData";
+
+    public static final String PREF_FACULTY_NAME = "facultyName";
+    public static final String PREF_COURSE_NUMBER = "courseNumber";
+    public static final String PREF_POSITION_RATING_INFORMATION = "positionRatingINformation";
+    public static final String PREF_FAMILY_NAME = "familyName";
+    public static final String PREF_GIVEN_NAME = "givenName";
+    public static final String PREF_MIDDLE_NAME = "middleName";
+    public static final String PREF_GROUP_NAME = "groupName";
 
     public static final String PREF_MOCK_FILE = "mock_points";
     public static final String PREF_MOCK_SUBJECT_NAME = "name";

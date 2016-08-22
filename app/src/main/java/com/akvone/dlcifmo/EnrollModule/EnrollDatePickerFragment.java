@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 
-import com.akvone.dlcifmo.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.R;
 
 /**

@@ -14,8 +14,7 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.akvone.dlcifmo.FragmentWithLoader;
-import com.akvone.dlcifmo.OnFragmentInteractionListener;
+import com.akvone.dlcifmo.MainModule.FragmentWithLoader;
 import com.akvone.dlcifmo.R;
 
 import org.jsoup.Jsoup;
