@@ -13,9 +13,8 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.akvone.dlcifmo.FragmentWithLoader;
+import com.akvone.dlcifmo.MainModule.FragmentWithLoader;
 import com.akvone.dlcifmo.R;
 
 import org.jsoup.Jsoup;

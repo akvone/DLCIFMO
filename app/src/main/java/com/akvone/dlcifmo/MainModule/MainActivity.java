@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo;
+package com.akvone.dlcifmo.MainModule;
 
 import android.support.v4.app.Fragment;
 import android.content.Context;
@@ -13,15 +13,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
-import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
+import com.akvone.dlcifmo.AboutActivity;
+import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
-import com.akvone.dlcifmo.JournalModule.Subject;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
 import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
-import com.akvone.dlcifmo.LoginModule.UserLoginTask;
+import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
+import com.akvone.dlcifmo.R;
+import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 
 import java.net.CookieManager;
@@ -42,41 +46,41 @@ public class MainActivity extends AppCompatActivity
     Fragment enrollFragment;
     Fragment feedbackFragment;
 
-    private boolean hasLoginData;
+    private boolean isFullMode;
+    private boolean skipLogin;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Проверяем, пропускал ли пользователь авторизацию
-        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_FILE,Context.MODE_PRIVATE);
-        hasLoginData = sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false);
-        if ((sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN_BOOLEAN,false))&&(hasLoginData)){
-            //Если пользователь логинился в предыдущий запуск приложения
-            if (sharedPref.getBoolean(Constants.PREF_HAS_LOGIN_DATA, false)){
-                String login = sharedPref.getString(Constants.PREF_LOGIN, null);
-                String password = sharedPref.getString(Constants.PREF_PASSWORD, null);
-                new UserLoginTask(login, password).execute(this);
+        Log.d("journal", "Activity onCreate");
+        new LoadSavedJournal(this).execute();
+        SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE,Context.MODE_PRIVATE);
+        isFullMode = sharedPref.getBoolean(Constants.PREF_IS_FULL_MODE, false);
+        skipLogin = sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN, false);
+        //Проверяем, нужно ли нам пропустить LoginActivity
+        if (skipLogin){ //Да, пропускаем и выполняем основную деятельность
+            setContentView(R.layout.activity_main);
+            initToolbar();
+            initDrawer();
+            initNavigationView();
+            loadFragments();
+
+            //Проверяем, в каком режиме работает приложение
+            if (isFullMode){
+                new MainLoginTask(this).
+                        execute(MainLoginTask.UPDATE_NAME_AND_MORE,
+                                MainLoginTask.UPDATE_RATING_AND_MORE);
+                changeFragment(journalFragment);
+            }
+            else {
+                changeFragment(topStFragment);
             }
         }
         else {
             startLoginActivity();
-            return;
+            finish();
         }
-        Log.d("journal", "Activity onCreate");
-        new LoadSavedJournal(this).execute();
-
-        setContentView(R.layout.activity_main);
-        initToolbar();
-        initDrawer();
-        initNavigationView();
-
-        loadFragments();
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.main_activity_container, journalFragment)
-                .commit();
-//        startActivity(new Intent(getApplicationContext(),AboutActivity.class));
     }
 
     private void initDrawer() {
@@ -84,6 +88,13 @@ public class MainActivity extends AppCompatActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
+
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (isFullMode){
+            updateDrawer();
+        }
+        else {
+        }
         toggle.syncState();
     }
     private void initToolbar(){
@@ -94,12 +105,11 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
     public void loadFragments(){
-        if (hasLoginData) {
+        if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = EnrollMainFragment.newInstance();
+            enrollFragment = EnrollDatePickerFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();
@@ -109,6 +119,24 @@ public class MainActivity extends AppCompatActivity
         topStFragment = new TopStFragment();
         feedbackFragment = BlankFragment.newInstance("Здесь будет обратная связь");
     }
+
+    public void updateDrawer(){
+        View header = navigationView.getHeaderView(0);
+        if (isFullMode){
+            TextView positionInRatingView = (TextView) header.findViewById(R.id.positionInRating);
+            TextView userNameView = (TextView) header.findViewById(R.id.userName);
+            TextView groupNameView = (TextView) header.findViewById(R.id.groupName);
+            SharedPreferences preferences = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
+            String positionInRating = preferences.getString(Constants.PREF_POSITION_RATING_INFORMATION,"error");
+            String userName = preferences.getString(Constants.PREF_FAMILY_NAME,"error")
+                    + " " + preferences.getString(Constants.PREF_GIVEN_NAME,"error");
+            String groupName = "Группа " + preferences.getString(Constants.PREF_GROUP_NAME,"error");
+            positionInRatingView.setText(positionInRating);
+            userNameView.setText(userName);
+            groupNameView.setText(groupName);
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
@@ -165,7 +193,7 @@ public class MainActivity extends AppCompatActivity
 
     public void startLoginActivity(){
         //На всякий почистим данные пользователя
-        getSharedPreferences(Constants.PREF_FILE, MODE_PRIVATE)
+        getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, MODE_PRIVATE)
                 .edit()
                 .clear()
                 .apply();

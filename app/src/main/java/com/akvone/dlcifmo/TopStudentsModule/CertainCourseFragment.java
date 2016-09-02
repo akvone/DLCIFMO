@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.akvone.dlcifmo.FragmentWithLoader;
+import com.akvone.dlcifmo.MainModule.FragmentWithLoader;
 import com.akvone.dlcifmo.R;
 
 import org.jsoup.Jsoup;

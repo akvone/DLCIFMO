@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo;
+package com.akvone.dlcifmo.SettingsModule;
 
 import android.content.res.Configuration;
 import android.os.Bundle;

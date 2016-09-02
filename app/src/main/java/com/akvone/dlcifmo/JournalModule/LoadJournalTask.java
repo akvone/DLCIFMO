@@ -4,8 +4,6 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.akvone.dlcifmo.LoginModule.UserLoginTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

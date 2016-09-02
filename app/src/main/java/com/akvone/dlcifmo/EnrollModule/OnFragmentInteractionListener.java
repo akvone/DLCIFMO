@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo;
+package com.akvone.dlcifmo.EnrollModule;
 
 import android.support.v4.app.Fragment;
 

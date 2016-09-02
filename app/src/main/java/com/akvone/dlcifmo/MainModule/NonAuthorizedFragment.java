@@ -1,4 +1,4 @@
-package com.akvone.dlcifmo;
+package com.akvone.dlcifmo.MainModule;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
+import com.akvone.dlcifmo.R;
 
 /**
  * Created on 05.08.2016.

@@ -4,13 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.util.Log;
 
 import com.akvone.dlcifmo.Constants;
-import com.akvone.dlcifmo.MainActivity;
-import com.akvone.dlcifmo.R;
+import com.akvone.dlcifmo.MainModule.MainActivity;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,12 +15,9 @@ import org.jsoup.select.Elements;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.CookieStore;
 import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -36,7 +29,7 @@ import javax.net.ssl.HttpsURLConnection;
  * Represents an asynchronous activity_login/registration task used to authenticate
  * the user.
  */
-public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
+public class CheckLoginTask extends AsyncTask<Object,Integer,Integer> {
     public static final int LOGIN_SUCCESS = 1;
     public static final int PASSWORD_IS_INCORRECT = 2;
 
@@ -47,7 +40,7 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
 
     Activity callerActivity;
     //Из MainActivity надо логиниться, поэтому public
-    public UserLoginTask(String login, String password) {
+    public CheckLoginTask(String login, String password) {
         mLogin = login;
         mPassword = password;
     }
@@ -109,10 +102,10 @@ public class UserLoginTask extends AsyncTask<Object,Integer,Integer> {
             }
             else {
                 SharedPreferences sharedPref = callerActivity
-                        .getSharedPreferences(Constants.PREF_FILE,
+                        .getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE,
                                 Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putBoolean(Constants.PREF_HAS_LOGIN_DATA, true);
+                editor.putBoolean(Constants.PREF_IS_FULL_MODE, true);
                 editor.putString(Constants.PREF_LOGIN, mLogin);
                 editor.putString(Constants.PREF_PASSWORD, mPassword);
                 editor.commit();
