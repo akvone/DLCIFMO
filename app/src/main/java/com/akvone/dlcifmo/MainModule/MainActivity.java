@@ -1,11 +1,12 @@
 package com.akvone.dlcifmo.MainModule;
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,16 +19,19 @@ import android.widget.TextView;
 
 import com.akvone.dlcifmo.AboutActivity;
 import com.akvone.dlcifmo.Constants;
+import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
+import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
+import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
+import com.akvone.dlcifmo.JournalModule.Journal;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
-import com.akvone.dlcifmo.EnrollModule.EnrollDatePickerFragment;
-import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
-import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.R;
 import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.net.CookieManager;
 
 public class MainActivity extends AppCompatActivity
@@ -53,8 +57,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("journal", "Activity onCreate");
-        new LoadSavedJournal(this).execute();
         SharedPreferences sharedPref = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE,Context.MODE_PRIVATE);
         isFullMode = sharedPref.getBoolean(Constants.PREF_IS_FULL_MODE, false);
         skipLogin = sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN, false);
@@ -70,7 +72,8 @@ public class MainActivity extends AppCompatActivity
             if (isFullMode){
                 new MainLoginTask(this).
                         execute(MainLoginTask.UPDATE_NAME_AND_MORE,
-                                MainLoginTask.UPDATE_RATING_AND_MORE);
+                                MainLoginTask.UPDATE_RATING_AND_MORE,
+                                MainLoginTask.UPDATE_JOURNAL);
                 changeFragment(journalFragment);
             }
             else {
@@ -109,7 +112,7 @@ public class MainActivity extends AppCompatActivity
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = EnrollDatePickerFragment.newInstance();
+            enrollFragment = EnrollMainFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();
@@ -197,6 +200,13 @@ public class MainActivity extends AppCompatActivity
                 .edit()
                 .clear()
                 .apply();
+        Journal.delete();
+        try {
+            FileOutputStream v = this.openFileOutput("journal.json", MODE_PRIVATE);
+            v.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         startActivity(new Intent(getApplicationContext(),LoginActivity.class));
         finish();
     }

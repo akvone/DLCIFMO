@@ -7,5 +7,11 @@
     <string name="subjectTypeCredit">Зачёт</string>
     <string name="subjectTypeExam">Экзамен</string>
     <string name="subjectTypeCourse">Курсовая работа</string>
+    <string name="journalTitle">Журнал</string>
+    <string name="first_semester">1 семестр</string>
+    <string name="second_semester">2 семестр</string>
+    <string name="error_swipe">Ошибка. Ёпта. потяни вниз, чтобы обновить</string>
+    <string name="withdraw_book">Отозвать</string>
+    <string name="delete">Удалить</string>
 
 </resources>

@@ -2,7 +2,8 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/jf_main">
 
     <com.akvone.dlcifmo.JournalModule.MySwipeRefreshLayout
         android:id="@+id/swipe_refresh_layout"
@@ -21,4 +22,9 @@
                 android:layout_height="match_parent"/>
         </FrameLayout>
     </com.akvone.dlcifmo.JournalModule.MySwipeRefreshLayout>
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pointsContainer"
+        />
 </FrameLayout>

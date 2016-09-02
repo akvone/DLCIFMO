@@ -39,7 +39,8 @@ public class EnrollDatePickerFragment extends DialogFragment implements  DatePic
         int day = c.get(Calendar.DAY_OF_MONTH);
 
         // создаем DatePickerDialog и возвращаем его
-        Dialog picker = new DatePickerDialog(getActivity(), this,
+
+        DatePickerDialog picker = new DatePickerDialog(getActivity(), R.style.DialogTheme, this,
                 year, month, day);
 
         return picker;
@@ -49,6 +50,7 @@ public class EnrollDatePickerFragment extends DialogFragment implements  DatePic
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
         if (mListener != null) {
             mListener.sendDate(dayOfMonth, monthOfYear, year);
+
         }
     }
 

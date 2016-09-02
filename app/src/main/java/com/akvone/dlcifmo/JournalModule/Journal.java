@@ -37,6 +37,10 @@ public class Journal {
         Log.d("Journal", "end creation");
         return instance;
     }
+    public static void delete(){
+        JournalFragment.doNotSaveJournal = true;
+        instance = null;
+    }
 
     private ArrayList<Year> years;
 

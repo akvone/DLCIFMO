@@ -3,12 +3,14 @@ package com.akvone.dlcifmo.JournalModule;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,7 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
+import android.widget.SimpleExpandableListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,13 +37,15 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import draglistview.DragItem;
 import draglistview.DragListView;
 
 public class JournalFragment extends Fragment {
-
+    private static final String TAG = "jf lcm";
 
     private static final int LAYOUT = R.layout.journal_fragment;
     public static JSONObject journal;
@@ -54,6 +60,8 @@ public class JournalFragment extends Fragment {
     private boolean loadingJournal;
     private List<String> semesters = new ArrayList<>();
 
+    public static boolean doNotSaveJournal;
+
     public static JournalFragment instance = null;
 
     public static JournalFragment getInstance(){
@@ -64,7 +72,7 @@ public class JournalFragment extends Fragment {
     }
 
     public static JournalFragment newInstance() {
-
+        doNotSaveJournal = false;
         Bundle args = new Bundle();
         JournalFragment fragment = new JournalFragment();
         fragment.setArguments(args);
@@ -100,7 +108,6 @@ public class JournalFragment extends Fragment {
     }
 
     public void setupListRecyclerView() {
-        //или стоит его изменить?
 
         if (Journal.getInstance() != null) {
             ArrayList<Subject> items = Journal.getInstance().getYear(Journal.chosenYear).getSemester(Journal.chosenSemester);
@@ -125,7 +132,7 @@ public class JournalFragment extends Fragment {
 
     public void updateCards(){
 
-        LoadJournalTask loadJournalTask = new LoadJournalTask(JournalFragment.getInstance());
+        LoadJournalTask loadJournalTask = new LoadJournalTask();
         loadJournalTask.execute();
 //
 //        subjectAdapter = new SubjectAdapter(Subject.subjects, getActivity());
@@ -149,29 +156,99 @@ public class JournalFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.action_change_semester:
                 Journal j = Journal.getInstance();
-                semesters.clear();
-                for (int i = 0; i < j.countYears(); i++){
-                    Journal.Year y = j.getYear(i);
-                    semesters.add(y.getSemesters().get(0).getNumber() + " семестр " + y.getName() +
-                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 0) ? "выбран" : ""));
-                    semesters.add(y.getSemesters().get(1).getNumber() + " семестр " + y.getName() +
-                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 1) ? "выбран" : ""));
+                //TODO: унаследовать BaseELA или изменить вид итемов
+
+                ArrayList<Map<String, String>> groupData;
+                ArrayList<Map<String, String>> childItemData;
+                ArrayList<ArrayList<Map<String, String>>> childData;
+                Map<String, String> m;
+
+                groupData = new ArrayList<>();
+                childItemData = new ArrayList<>();
+                childData = new ArrayList<>();
+                m = new HashMap<>();
+                int i = 0;
+                for (Journal.Year y :
+                        Journal.getInstance().getYears()) {
+                    childItemData = new ArrayList<>();
+                    m = new HashMap<>();
+                    m.put("yearName", y.getName() + ((Journal.chosenYear == i) ? " выбран" : ""));
+                    groupData.add(m);
+                    m = new HashMap<>();
+                    m.put("semName", getActivity().getString(R.string.first_semester)
+                        + ((Journal.chosenSemester == 0)&&(Journal.chosenYear == i) ? " выбран" : ""));
+                    childItemData.add(m);
+                    m = new HashMap<>();
+                    m.put("semName", getActivity().getString(R.string.second_semester)
+                        + ((Journal.chosenSemester == 1)&&(Journal.chosenYear == i) ? " выбран" : ""));
+                    childItemData.add(m);
+                    childData.add(childItemData);
+                    i++;
                 }
+                String[] groupFrom = {"yearName"};
+                String[] childFrom = {"semName"};
+                int[] groupTo = {android.R.id.text1};
+                int[] childTo = {android.R.id.text1};
+
+                SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+                        getActivity(),
+                        groupData,
+                        android.R.layout.simple_expandable_list_item_1,
+                        groupFrom,
+                        groupTo,
+                        childData,
+                        android.R.layout.simple_list_item_1,
+                        childFrom,
+                        childTo
+                );
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.action_chose_semester);
-                ListAdapter adapter = new ArrayAdapter<String>(getActivity(),
-                        android.R.layout.select_dialog_singlechoice, semesters);
-                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Journal.chosenSemester = (which) % 2;
-                        Journal.chosenYear = which / 2;
-                        Log.d("Subject", "Selected semester: " + (which + 1));
-                        setupListRecyclerView();
-                    }
-                });
-                builder.create().show();
+                ExpandableListView elv = new ExpandableListView(getActivity());
+                elv.setAdapter(adapter);
+                builder.setView(elv);
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
+                elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+                @Override
+                public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                    Toast.makeText(getActivity(),
+                            (groupPosition*2 + childPosition + 1) + " семестр",
+                            Toast.LENGTH_SHORT).show();
+                    Journal.chosenSemester = childPosition;
+                    Journal.chosenYear = groupPosition;
+                    dialog.hide();
+//                        Log.d("Subject", "Selected semester: " + (which + 1));
+                    setupListRecyclerView();
+                    return true;
+                }
+            });
+
+
+
+//                semesters.clear();
+//                for (int i = 0; i < j.countYears(); i++){
+//                    Journal.Year y = j.getYear(i);
+//                    semesters.add(y.getSemesters().get(0).getNumber() + " семестр " + y.getName() +
+//                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 0) ? "выбран" : ""));
+//                    semesters.add(y.getSemesters().get(1).getNumber() + " семестр " + y.getName() +
+//                            ((i == Journal.chosenYear)&&(Journal.chosenSemester == 1) ? "выбран" : ""));
+//                }
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle(R.string.action_chose_semester);
+//                ListAdapter adapter = new ArrayAdapter<>(getActivity(),
+//                        android.R.layout.select_dialog_singlechoice, semesters);
+//                builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        Journal.chosenSemester = (which) % 2;
+//                        Journal.chosenYear = which / 2;
+//                        Log.d("Subject", "Selected semester: " + (which + 1));
+//                        setupListRecyclerView();
+//                    }
+//                });
+//                builder.create().show();
                 //Change adapter
 //                mLoadJournalTask = new LoadJournalTask(this);
 //                mLoadJournalTask.execute();
@@ -187,25 +264,25 @@ public class JournalFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.d("lcm", "Fragment onAttach");
+        if (Journal.getInstance() == null) {
+            new LoadSavedJournal(getContext()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        }
+        ((AppCompatActivity) context).setTitle(context.getString(R.string.journalTitle));
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        Log.d("journal", "Fragment onCreate");
-
-        if (Journal.getInstance() == null) {
-//            new LoadSavedJournal(this).execute();
-            LoadJournalTask loadJournalTask = new LoadJournalTask(this);
-            loadJournalTask.execute();
-        }
+        Log.d("lcm", "Fragment onCreate");
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        Log.d("lcm", "Fragment onCreateView");
         view = inflater.inflate(LAYOUT, container, false);
         mRefreshLayout  = (MySwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         mDragListView = (DragListView) view.findViewById(R.id.drag_list_view);
@@ -275,13 +352,29 @@ public class JournalFragment extends Fragment {
 
     @Override
     public void onResume() {
+        Log.d(TAG, "onResume: ");
         super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause: ");
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop: ");
+        if (!doNotSaveJournal) {
+            saveJournal(journal);
+        }
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
         //save journal
-        saveJournal(journal);
+        Log.d("Journal Fragment", "onDestroy: "+ doNotSaveJournal);
         super.onDestroy();
     }
 
