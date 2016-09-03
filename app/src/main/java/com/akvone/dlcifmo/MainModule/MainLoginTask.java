@@ -17,6 +17,7 @@ import java.net.CookieManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.Executor;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -131,11 +132,11 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
             editor.clear().commit();
         }
         else if (toDoList.contains(LOGIN_SUCCESS)){
-            if (toDoList.contains(UPDATE_NAME_AND_MORE)) {
-                new GetNameAndMoreTask(mainActivity).execute();
-            }
             if (toDoList.contains(UPDATE_RATING_AND_MORE)) {
-                new GetRatingAndMoreTask(mainActivity).execute();
+                new GetRatingAndMoreTask(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }
+            if (toDoList.contains(UPDATE_NAME_AND_MORE)) {
+                new GetNameAndMoreTask(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }
     }
