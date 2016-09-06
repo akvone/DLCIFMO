@@ -4,4 +4,23 @@
     <string name="about_itmo_university">Университет Итмо</string>
     <string name="about_app_name">Центр Дистанционного Обучения</string>
     <string name="about_contact_us">Связаться с нами</string>
+    <string name="subjectTypeCredit">Зачёт</string>
+    <string name="subjectTypeExam">Экзамен</string>
+    <string name="subjectTypeCourse">Курсовая работа</string>
+    <string name="journalTitle">Журнал</string>
+    <string name="first_semester">1 семестр</string>
+    <string name="second_semester">2 семестр</string>
+    <string name="error_swipe">Ошибка. Ёпта. потяни вниз, чтобы обновить</string>
+    <string name="withdraw_book">Отозвать</string>
+    <string name="delete">Удалить</string>
+
+    <!-- Strings related to activity_login -->
+    <string name="title_activity_login">Авторизация в ЦДО</string>
+    <string name="error_field_required">Необходимое поле</string>
+    <string name="prompt_email">Логин ЦДО</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_log_in">Войти</string>
+    <string name="action_skip_login">Пропустить авторизацию</string>
+    <string name="error_incorrect_data">Проверьте данные</string>
+
 </resources>
