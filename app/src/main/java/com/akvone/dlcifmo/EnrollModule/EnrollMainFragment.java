@@ -472,21 +472,31 @@ public class EnrollMainFragment extends Fragment{
             super.onPostExecute(aVoid);
 //            recyclerView.removeViewAt(pos);
 //            recyclerView.refreshDrawableState();
-            records.remove(pos);
-            ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
-            Toast.makeText(getContext(), "Отозвана", Toast.LENGTH_SHORT).show();
+            try {
+                records.remove(pos);
+                ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
+                Toast.makeText(getContext(), "Отозвана", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to remove recyclerView item", e);
+                Toast.makeText(getContext(), "Ошибка при отзыве", Toast.LENGTH_SHORT).show();
+            }
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            View view = recyclerView.getChildAt(pos);
+            try {
+                View view = recyclerView.getChildAt(pos);
 
-            ImageView img = (ImageView) view.findViewById(R.id.withdrawEnroll);
-            ProgressBar progress = (ProgressBar) view.findViewById(R.id.withdrawProgress);
-            progress.setEnabled(true);
-            progress.setVisibility(View.VISIBLE);
-            img.setVisibility(View.INVISIBLE);
+                ImageView img = (ImageView) view.findViewById(R.id.withdrawEnroll);
+                ProgressBar progress = (ProgressBar) view.findViewById(R.id.withdrawProgress);
+                progress.setEnabled(true);
+                progress.setVisibility(View.VISIBLE);
+                img.setVisibility(View.INVISIBLE);
+            } catch (Exception e) {
+                Toast.makeText(getContext(), "Ошибка при отзыве", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "onPreExecute: Withdraw ini failure", e);
+            }
         }
 
 
