@@ -13,10 +13,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import com.akvone.dlcifmo.R;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class EnrollDatePickerFragment extends DialogFragment implements  DatePickerDialog.OnDateSetListener{
 
@@ -48,6 +50,12 @@ public class EnrollDatePickerFragment extends DialogFragment implements  DatePic
 
     @Override
     public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        Calendar today = new GregorianCalendar();
+        Calendar date = new GregorianCalendar(year, monthOfYear, dayOfMonth);
+        if (today.after(date)){
+            Toast.makeText(getContext(), "Нельзя выбрать прошедшую дату.", Toast.LENGTH_SHORT).show();
+            return;
+        }
         if (mListener != null) {
             mListener.sendDate(dayOfMonth, monthOfYear, year);
 

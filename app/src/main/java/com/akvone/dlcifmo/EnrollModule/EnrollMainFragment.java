@@ -1,40 +1,27 @@
 package com.akvone.dlcifmo.EnrollModule;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.drawable.ClipDrawable;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ScrollingView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.akvone.dlcifmo.Constants;
-import com.akvone.dlcifmo.JournalModule.MySwipeRefreshLayout;
-import com.akvone.dlcifmo.MainModule.FragmentWithLoader;
 import com.akvone.dlcifmo.R;
 
 import org.jsoup.Jsoup;
@@ -46,14 +33,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.CookieHandler;
-import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.zip.Inflater;
+import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -64,6 +48,7 @@ public class EnrollMainFragment extends Fragment{
     private static final int LAYOUT = R.layout.enroll_main;
     private String TAG = "Enroll fragment";
 
+    private boolean refreshing = false;
     private View view;
     private String login;
     private String pass;
@@ -71,7 +56,7 @@ public class EnrollMainFragment extends Fragment{
     private SwipeRefreshLayout mSwipe;
     private FloatingActionButton mFab;
     private ScrollView mScrollView;
-    protected static List<RecordItem> records = new ArrayList<>();
+    protected static ArrayList<RecordItem> records = new ArrayList<>();
 
 
     private OnFragmentInteractionListener mListener;
@@ -86,54 +71,60 @@ public class EnrollMainFragment extends Fragment{
      *
      * @return A new instance of fragment EnrollDatePickerFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static EnrollMainFragment newInstance() {
-        EnrollMainFragment fragment = new EnrollMainFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    static boolean logged = false;
+    public static EnrollMainFragment instance;
+    public static EnrollMainFragment getInstance() {
+        if (instance == null) {
+            EnrollMainFragment fragment = new EnrollMainFragment();
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
+            instance = fragment;
+        }
+        return instance;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d(TAG, "onCreateView: called");
+        Log.d(TAG, "onCreateView: called, records" + records.toString());
         view = inflater.inflate(LAYOUT, container, false);
+
+        mScrollView = (ScrollView) view.findViewById(R.id.enroll_scroll);
+
         recyclerView = (RecyclerView) view.findViewById(R.id.enrollRecords);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(null);
-        mFab = (FloatingActionButton) view.findViewById(R.id.datePickerFAB);
-        mFab.setVisibility(View.INVISIBLE);
+        RecordItemAdapter adapter = new RecordItemAdapter(records, this);
+        recyclerView.setAdapter(adapter);
+        if ((records != null)&&(records.size() != 0)){
+//            adapter = new RecordItemAdapter(records, this);
+            mScrollView.setVisibility(View.GONE);
+            adapter.swap(records);
+        }
+
         mSwipe = (SwipeRefreshLayout) view.findViewById(R.id.enroll_refresh_main);
-//        mSwipe.setScrollingView(recyclerView);
         mSwipe.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorAccent),
                 ContextCompat.getColor(getContext(), R.color.colorPrimary),
                 ContextCompat.getColor(getContext(), R.color.colorPrimaryDark));
         mSwipe.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (mFab.getVisibility() == View.INVISIBLE){
-                    new LoginTask().execute(login, pass);
-                } else {
+                if (logged) {
                     new LoadRecords().execute();
+                } else {
+                    new LoginTask().execute(login, pass);
                 }
-//                updateRecords();
+
             }
         });
-//        mSwipe.bringToFront();
-//        mSwipe.setRefreshing(true);
-        mScrollView = (ScrollView) view.findViewById(R.id.enroll_scroll);
-//        mScrollView.setVisibility(View.GONE);
+        setSwipeRefreshState(refreshing);
 
-
-
-        new LoginTask().execute(login, pass);
-//        new LoadRecords().execute();
+        mFab = (FloatingActionButton) view.findViewById(R.id.datePickerFAB);
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,15 +133,16 @@ public class EnrollMainFragment extends Fragment{
                 dialogFragment.show(getActivity().getSupportFragmentManager(), null);
             }
         });
-        //<tr class="table_bottomlogoline"> neighbours
+
         return view;
     }
 
     void updateRecords(){
-        mSwipe.setRefreshing(false);
         mScrollView.setVisibility(View.GONE);
         RecordItemAdapter adapter = new RecordItemAdapter(records, this);
         recyclerView.setAdapter(adapter);
+//        ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
+        Log.d(TAG, "updateRecords: records" + records.toString());
 
     }
     void withdraw(final String id, final String date,final int pos){
@@ -167,7 +159,7 @@ public class EnrollMainFragment extends Fragment{
     }
 
     public void setSwipeRefreshState(final boolean refreshing) {
-
+        this.refreshing = refreshing;
         if (mSwipe != null) {
             mSwipe.post(new Runnable() {
                 @Override
@@ -179,13 +171,17 @@ public class EnrollMainFragment extends Fragment{
 
     }
 
+
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         SharedPreferences preferences = context.getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
         login = preferences.getString(Constants.PREF_LOGIN, "");
-         pass = preferences.getString(Constants.PREF_PASSWORD, "");
-
+        pass = preferences.getString(Constants.PREF_PASSWORD, "");
+        if (!logged) {
+            new LoginTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,login, pass);
+        }
         if (context instanceof OnFragmentInteractionListener) {
             mListener = (OnFragmentInteractionListener) context;
         } else {
@@ -200,22 +196,42 @@ public class EnrollMainFragment extends Fragment{
         mListener = null;
     }
 
-    private class LoginTask extends AsyncTask<String,Integer,Void> {
+    void login(){
+        new LoginTask().execute(login, pass);
+    }
+
+    class LoginTask extends AsyncTask<String,Integer,Integer> {
+        final int NO_INTERNET = 2;
+        final int DATA_LOAD_FAIL = 4;
+
+
         @Override
         protected void onPreExecute() {
             setSwipeRefreshState(true);
+            Log.d(TAG, "onPreExecute: LoginTask");
+            records = new ArrayList<>();
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(Integer aVoid) {
             //две по три подряд нельзя
             //нельзя более 3 академ. часов подряд
-            mFab.setVisibility(View.VISIBLE);
-            new LoadRecords().execute();
+//            mFab.setVisibility(View.VISIBLE);
+//            new LoadRecords().execute();
+            Log.d(TAG, "onPostExecute: login: " + records.toString());
+            setSwipeRefreshState(false);
+            updateRecords();
+            logged = true;
+            try {
+                Toast.makeText(getContext(), "Login finished", Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected Integer doInBackground(String... params) {
+            Log.d(TAG, "doInBackground: Login");
             StringBuilder date;
             Calendar today = Calendar.getInstance();
             int day = today.get(Calendar.DAY_OF_MONTH);
@@ -274,25 +290,51 @@ public class EnrollMainFragment extends Fragment{
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
-            } catch (IOException e) {
+                Document doc = Jsoup.parse(response.toString());
+                String logged_user = doc.select("input[name=\"logged_user\"]").attr("value");
+                Element head = doc.select("tr.table_bottomlogoline").first();
+                Element root = head.parent();
+                for (int i = 1; i < root.children().size(); i++) {
+                    records.add(new RecordItem(root.child(i)));
+                }
+                Log.d(TAG, "doInBackground: LoginTask");
+            } catch (UnknownHostException e){
                 e.printStackTrace();
                 cancel(true);
+                return NO_INTERNET;
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+                cancel(true);
+                return DATA_LOAD_FAIL;
             }
 
             return null;
         }
 
         @Override
-        protected void onCancelled() {
+        protected void onCancelled(Integer result) {
             super.onCancelled();
             setSwipeRefreshState(false);
-            String string = getContext().getString(R.string.error_swipe) + "login";
-            Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
+            switch (result){
+                case NO_INTERNET:
+                    String string = getContext().getString(R.string.error_swipe) + "login";
+                    string = "Пейн, я интернета не чувствую!";
+                    Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
+                    break;
+                case DATA_LOAD_FAIL:
+                    login();
+                    break;
+            }
         }
     }
-    private class LoadRecords extends AsyncTask<Void, Integer, Void>{
+    private class LoadRecords extends AsyncTask<Void,Integer,Integer> {
+
+        final int NO_INTERNET = 2;
+        final int DATA_LOAD_FAIL = 4;
+
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Integer doInBackground(Void... params) {
             try {
 
                 Document doc = Jsoup.connect("https://de.ifmo.ru/--schedule/student.php").timeout(10000).get();
@@ -304,31 +346,49 @@ public class EnrollMainFragment extends Fragment{
                 }
                 Log.d(TAG, "doInBackground: ");
 
-            } catch (Exception e) {
+            } catch (UnknownHostException e){
                 e.printStackTrace();
                 cancel(true);
+                return NO_INTERNET;
+            }
+
+            catch (Exception e) {
+                e.printStackTrace();
+                cancel(true);
+                return DATA_LOAD_FAIL;
             }
             return null;
         }
 
         @Override
         protected void onPreExecute() {
+            Log.d(TAG, "onPreExecute: LoadRecords");
             super.onPreExecute();
             records = new ArrayList<>();
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(Integer aVoid) {
             super.onPostExecute(aVoid);
             setSwipeRefreshState(false);
             updateRecords();
         }
 
         @Override
-        protected void onCancelled() {
+        protected void onCancelled(Integer result) {
             super.onCancelled();
             setSwipeRefreshState(false);
-            Toast.makeText(getContext(), R.string.error_swipe, Toast.LENGTH_SHORT).show();
+            switch (result){
+                case NO_INTERNET:
+                    String string = getContext().getString(R.string.error_swipe) + "login";
+                    string = "Я интернета не чувствую!";
+                    Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
+                    break;
+                case DATA_LOAD_FAIL:
+                    new LoadRecords().execute();
+                    break;
+            }
+//            Toast.makeText(getContext(), R.string.error_swipe, Toast.LENGTH_SHORT).show();
         }
     }
     protected class WithdrawEnroll extends AsyncTask<String, Integer, Void>{
@@ -410,8 +470,10 @@ public class EnrollMainFragment extends Fragment{
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            recyclerView.removeViewAt(pos);
+//            recyclerView.removeViewAt(pos);
+//            recyclerView.refreshDrawableState();
             records.remove(pos);
+            ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
             Toast.makeText(getContext(), "Отозвана", Toast.LENGTH_SHORT).show();
         }
 

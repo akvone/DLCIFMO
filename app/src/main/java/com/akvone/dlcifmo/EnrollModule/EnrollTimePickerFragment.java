@@ -34,6 +34,7 @@ import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -58,6 +59,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private static final String ARG_MONTH = "month";
     private static final String ARG_YEAR = "year";
     private static final int LAYOUT = R.layout.enroll_time_picker;
+    public static final String TAG = "Enroll Time Picker Frag";
 
     // TODO: Rename and change types of parameters
     private int day;
@@ -141,19 +143,22 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                     }
                     i++;
                 }
+                if (start != -1){
+                    streaks.put(start, streak);
+                }
                 if (!streaks.isEmpty()){
                     for (int k :
                             streaks.keySet()) {
                         start = k;
                         streak = streaks.get(k) + 1;
-                        new Enroll().execute(adapter.getTimes()[start], adapter.getTimes()[start+streak]);
+                        new Enroll().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,adapter.getTimes()[start], adapter.getTimes()[start+streak]);
                     }
                 } else {
                     Toast.makeText(context, "Chose something!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        new LoadFreePlaces().execute(day, month, year);
+        new LoadFreePlaces().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, day, month, year);
         return view;
     }
 
@@ -181,17 +186,26 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
 
                 recyclerView.setAdapter(adapter = new BookItemAdaptor(places, date.toString()));
-                showProgress(false);
+                try {
+                    showProgress(false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
 
         @Override
         protected void onPreExecute() {
-            showProgress(true);
+            try {
+                showProgress(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         protected List<String> doInBackground(Integer... params) {
+            Log.d(TAG, "doInBackground: LoadFreePlaces");
             int day = params[0];
             int month = params[1];
             int year = params[2];
@@ -213,7 +227,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
             int node = week - week1stSeptember + 23;
 
             try {
-                Document doc = Jsoup.connect("http://de.ifmo.ru/index.php?node="+node).get();
+                Document doc = Jsoup.connect("http://de.ifmo.ru/index.php?node="+node).timeout(10000).get();
                 Elements mainTable = doc.select("td.ptext table tbody tr");
                 //Первые 3 td не нужны, 4-ый - понедельник
                 Elements days = mainTable.select("td[rowspan]");
@@ -254,21 +268,43 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
         }
     }
     private class Enroll extends AsyncTask<String, Integer, Integer>{
+        String mBegin;
+        String mEnd;
+        final int TO_RESTART = 2;
+        final int DATA_LOAD_FAIL = 4;
+        final int NO_INTERNET = 8;
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            try {
+                showProgress(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         @Override
         protected void onPostExecute(Integer integer) {
-            showProgress(false);
+            try {
+                showProgress(false);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             Toast.makeText(context, "Запсиь успешна. Возможно...", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected Integer doInBackground(String... params) {
+            Log.d(TAG, "doInBackground: enroll");
             String begin = params[0];
             String  end = params[1];
+            mBegin = begin;
+            mEnd = end;
+            if (!(EnrollMainFragment.logged)){
+                cancel(true);
+                return TO_RESTART;
+            }
             String  surl = "https://de.ifmo.ru/--schedule/student.php";
             try {
                 HttpsURLConnection con = (HttpsURLConnection) new URL(surl).openConnection();
@@ -278,7 +314,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                         ByteArrayOutputStream(400);
                 PrintWriter out = new PrintWriter(byteStream, true);
                 int month = Integer.parseInt(date.substring(3, 5));
-                String  xml = "view=sr&func=sr&month1=" +
+                String xml = "view=sr&func=sr&month1=" +
                         month +
                         "&year1=" +
                         date.substring(6) +
@@ -316,10 +352,46 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
 
                 Document doc = Jsoup.parse(response.toString());
                 Log.d("Doc", doc.select("td").toString());
+            } catch (UnknownHostException e){
+                e.printStackTrace();
+                cancel(true);
+                return NO_INTERNET;
             } catch (IOException e) {
                 e.printStackTrace();
+                cancel(true);
+                return DATA_LOAD_FAIL;
             }
             return null;
+        }
+
+        @Override
+        protected void onCancelled(Integer result) {
+            super.onCancelled();
+            if (result == TO_RESTART) {
+                Log.d(TAG, "onCancelled: enroll will fail cuz no login");
+                EnrollMainFragment.getInstance().login();
+                new Enroll().execute(mBegin, mEnd);
+            }
+//            if (result == DATA_LOAD_FAIL){
+//                Toast.makeText(getContext(), "Fail", Toast.LENGTH_SHORT).show();
+//                ((OnFragmentInteractionListener) getContext()).popFragmentStack();
+//
+//            }
+            switch (result){
+                case NO_INTERNET:
+                    String string = getContext().getString(R.string.error_swipe) + "login";
+                    string = "Я интернета не чувствую!";
+                    Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
+                    try {
+                        showProgress(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case DATA_LOAD_FAIL:
+                    new Enroll().execute(mBegin, mEnd);
+                    break;
+            }
         }
     }
 }

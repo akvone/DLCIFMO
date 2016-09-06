@@ -9,17 +9,17 @@ import android.widget.TextView;
 
 import com.akvone.dlcifmo.R;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Created by 1 on 01.09.2016.
  */
 public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.ViewHolder> {
-    List<RecordItem> data;
+    ArrayList<RecordItem> data = new ArrayList<>();
     EnrollMainFragment enrollMainFragment;
 
-    public RecordItemAdapter(List<RecordItem> data, EnrollMainFragment fragment) {
-        this.data = data;
+    public RecordItemAdapter(ArrayList<RecordItem> data, EnrollMainFragment fragment) {
+        this.data.addAll(data);
         enrollMainFragment = fragment;
     }
 
@@ -43,6 +43,14 @@ public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.Vi
     @Override
     public int getItemCount() {
         return data.size();
+    }
+
+    public void swap(ArrayList<RecordItem> datas){
+        if ((data != null)) {
+            data.clear();
+            data.addAll(datas);
+            notifyDataSetChanged();
+        }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{

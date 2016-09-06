@@ -6,13 +6,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -24,13 +22,11 @@ import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
 import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.JournalModule.Journal;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
-import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.R;
 import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.CookieManager;
 
@@ -112,7 +108,7 @@ public class MainActivity extends AppCompatActivity
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = EnrollMainFragment.newInstance();
+            enrollFragment = EnrollMainFragment.getInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();
