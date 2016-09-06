@@ -13,6 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//ToDO: добавить в разметку scrollView
+
 public class AboutActivity extends AppCompatActivity {
 
     @Override

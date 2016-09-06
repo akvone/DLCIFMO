@@ -14,4 +14,13 @@
     <string name="withdraw_book">Отозвать</string>
     <string name="delete">Удалить</string>
 
+    <!-- Strings related to activity_login -->
+    <string name="title_activity_login">Авторизация в ЦДО</string>
+    <string name="error_field_required">Необходимое поле</string>
+    <string name="prompt_email">Логин ЦДО</string>
+    <string name="prompt_password">Пароль</string>
+    <string name="action_log_in">Войти</string>
+    <string name="action_skip_login">Пропустить авторизацию</string>
+    <string name="error_incorrect_data">Проверьте данные</string>
+
 </resources>
