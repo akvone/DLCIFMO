@@ -18,6 +18,7 @@ import java.util.concurrent.ForkJoinPool;
  */
 public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
 
+    public static final String TAG = "Load saved journal Task";
     Context context;
     public LoadSavedJournal(Context c) {
         super();
@@ -26,6 +27,7 @@ public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(Void... params) {
+        Log.d(TAG, "doInBackground: ");
         JSONObject object = null;
         try {
             FileInputStream in = context.openFileInput("journal.json");
@@ -50,13 +52,14 @@ public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
             Log.d("Journal parse", "reader failure");
             cancel(true);
         }
+        Log.d(TAG, "doInBackground: finished");
         return object;
     }
 
     @Override
     protected void onPostExecute(JSONObject object) {
         JournalFragment.journal = object;
-        Log.d("Load saved journal", "end");
+        Log.d(TAG, "end");
 //        Subject.parseSavedJournal(JournalFragment.journal);
         if (object == null) return;
         if (Journal.getInstance() == null){
@@ -75,6 +78,6 @@ public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        Log.d("Load saved journal", "begin");
+        Log.d(TAG, "begin");
     }
 }

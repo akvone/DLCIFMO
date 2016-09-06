@@ -2,7 +2,13 @@ package com.akvone.dlcifmo.MainModule;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaActionSound;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.util.Log;
+
+import com.akvone.dlcifmo.JournalModule.LoadJournalTask;
+import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,10 +20,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.CookieManager;
+import java.net.HttpCookie;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.Executor;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -32,8 +39,11 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
 
     public static final int UPDATE_NAME_AND_MORE = 1;
     public static final int UPDATE_RATING_AND_MORE = 2;
+    public static final int UPDATE_JOURNAL = 3;
 
     public static final String ITMO_LOGIN_URL = "https://de.ifmo.ru/servlet/";
+
+    public static final String TAG = "Main Login Task";
 
     private MainActivity mainActivity;
     private String login;
@@ -63,6 +73,7 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
         ArrayList<Integer> toDoList = new ArrayList<>(Arrays.asList(params));
 
         MainActivity.cookieManager = new CookieManager();
+        MainActivity.cookieManager.getCookieStore().removeAll();
         java.net.CookieHandler.setDefault(MainActivity.cookieManager);
 
 //        if (login==null || password==null){
@@ -124,6 +135,7 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
 
     @Override
     protected void onPostExecute(ArrayList<Integer> toDoList) {
+        Log.d(TAG, "onPostExecute: ");
         super.onPostExecute(toDoList);
         if (toDoList.contains(LOGIN_DATA_IS_INCORRECT)){
             SharedPreferences preferences = mainActivity.
@@ -132,11 +144,15 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
             editor.clear().commit();
         }
         else if (toDoList.contains(LOGIN_SUCCESS)){
-            if (toDoList.contains(UPDATE_RATING_AND_MORE)) {
-                new GetRatingAndMoreTask(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
+            Log.d(TAG, "onPostExecute: login success");
             if (toDoList.contains(UPDATE_NAME_AND_MORE)) {
-                new GetNameAndMoreTask(mainActivity).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                new GetNameAndMoreTask(mainActivity).executeOnExecutor(THREAD_POOL_EXECUTOR);
+            }
+            if (toDoList.contains(UPDATE_RATING_AND_MORE)) {
+                new GetRatingAndMoreTask(mainActivity).execute();
+            }
+            if (toDoList.contains(UPDATE_JOURNAL)){
+                new LoadJournalTask().execute();
             }
         }
     }

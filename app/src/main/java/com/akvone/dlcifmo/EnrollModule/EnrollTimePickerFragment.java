@@ -27,14 +27,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.CookieHandler;
 import java.net.CookieManager;
-import java.net.CookiePolicy;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -62,9 +61,10 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private View view;
     private RecyclerView recyclerView;
     private Context context;
-    private CookieManager enrollCookieManager;
+    protected static CookieManager enrollCookieManager;
     private StringBuilder date; //Дата записи, приведённая к понятному ЦДО виду (01.09.2016)
     private BookItemAdaptor adapter;
+    private LinkedHashMap<Integer, Integer> streaks;
 
     public EnrollTimePickerFragment() {
         // Required empty public constructor
@@ -93,11 +93,13 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
             if (day < 10) {
                 date.append("0").append(day);
             } else date.append(day);
+            date.append(".");
             if (month < 9) {
                 date.append("0").append((month+1));
             } else {
                 date.append(month+1);
             }
+            date.append(".");
             date.append(year);
         }
     }
@@ -106,17 +108,44 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
-        hidableView = view.findViewById(R.id.hidableLayout);
+        hidableView = view.findViewById(R.id.hidable_layout);
         progressBar = (ProgressBar) view.findViewById(R.id.registration_facility_progress);
         Button b = (Button) view.findViewById(R.id.registrationButton);
 
-
-
-//        SharedPreferences preferences = context.getSharedPreferences()
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new LoginTask().execute("191762", "dxv885");
+                int start = -1;
+                int streak = 0;
+                int i = 0;
+                streaks = new LinkedHashMap<>();
+                for (BookItemAdaptor.Item item:
+                        adapter.getData()){
+                    if (item.checked){
+                        if (start == -1){
+                            start = i;
+                        } else {
+                            streak ++;
+                        }
+                    } else {
+                        if (start != -1){
+                            streaks.put(start, streak);
+                            start = -1;
+                            streak = 0;
+                        }
+                    }
+                    i++;
+                }
+                if (!streaks.isEmpty()){
+                    for (int k :
+                            streaks.keySet()) {
+                        start = k;
+                        streak = streaks.get(k) + 1;
+                        new Enroll().execute(adapter.getTimes()[start], adapter.getTimes()[start+streak]);
+                    }
+                } else {
+                    Toast.makeText(context, "Chose something!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         new LoadFreePlaces().execute(day, month, year);
@@ -145,7 +174,8 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
 
                 recyclerView = (RecyclerView) view.findViewById(R.id.registrationRecyclerView);
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
-                recyclerView.setAdapter(adapter = new BookItemAdaptor(places));
+
+                recyclerView.setAdapter(adapter = new BookItemAdaptor(places, date.toString()));
                 showProgress(false);
             }
         }
@@ -204,92 +234,18 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
+                cancel(true);
             }
 
 
             return places;
         }
-    }
-    private class LoginTask extends AsyncTask<String,Integer,Void> {
-        @Override
-        protected void onPreExecute() {
-            enrollCookieManager = new CookieManager();
-            enrollCookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
-            CookieHandler.setDefault(enrollCookieManager);
-            showProgress(true);
-        }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            int start = 0;
-            int streak = 1;
-            int i = 0;
-            boolean empty = true;
-            for (BookItemAdaptor.Item item :
-                    adapter.getData()) {
-                if ((empty)&&(item.checked)){
-                    start = i;
-                    empty = false;
-                } else if ((!empty)&&(item.checked)){
-                    streak++;
-                    if (streak == 3) {
-                        break;
-                    }
-                }
-                i++;
-            }
-            if (!empty){
-                new Enroll().execute(adapter.getTimes()[start], adapter.getTimes()[start+streak]);
-            }
-        }
-
-        @Override
-        protected Void doInBackground(String... params) {
-
-            String login = params[0];
-            String password = params[1];
-            String surl = "https://de.ifmo.ru/--schedule/index.php";
-            try {
-                HttpsURLConnection con = (HttpsURLConnection) new URL(surl).openConnection();
-
-                con.setDoOutput(true);
-
-                ByteArrayOutputStream byteStream = new
-                        ByteArrayOutputStream(400);
-                PrintWriter out = new PrintWriter(byteStream, true);
-                String xml = "data=" +
-                        date.toString() +
-                        "+12%3A00%3A00&login=" +
-                        login +
-                        "&passwd=" +
-                        password +
-                        "&role=%D1%F2%F3%E4%E5%ED%F2";
-                out.write(xml);
-                out.flush();
-
-                con.setRequestMethod("POST");
-                con.setRequestProperty("Content-Length", String.valueOf(byteStream.size()));
-                con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");//установка свойств запроса
-                con.setRequestProperty("Content-Type",
-                        "application/x-www-form-urlencoded");
-
-                byteStream.writeTo(con.getOutputStream());
-                int responseCode = con.getResponseCode(); //получение кода ответа(200)
-
-                BufferedReader in = new BufferedReader(
-                        new InputStreamReader(con.getInputStream(), "Windows-1251"));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-
-                //Try to interrupt earlier
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            return null;
+        protected void onCancelled() {
+            super.onCancelled();
+            Toast.makeText(context, "Error happened", Toast.LENGTH_SHORT).show();
+            ((OnFragmentInteractionListener) context).popFragmentStack();
         }
     }
     private class Enroll extends AsyncTask<String, Integer, Integer>{
@@ -301,14 +257,13 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
         @Override
         protected void onPostExecute(Integer integer) {
             showProgress(false);
-            Toast.makeText(context, "Запсиь успешна. Возможно...", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, "Запсиь успешна. Возможно...", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         protected Integer doInBackground(String... params) {
             String begin = params[0];
             String  end = params[1];
-
             String  surl = "https://de.ifmo.ru/--schedule/student.php";
             try {
                 HttpsURLConnection con = (HttpsURLConnection) new URL(surl).openConnection();
@@ -317,7 +272,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 ByteArrayOutputStream byteStream = new
                         ByteArrayOutputStream(400);
                 PrintWriter out = new PrintWriter(byteStream, true);
-                int month = Integer.parseInt(date.substring(3, 4));
+                int month = Integer.parseInt(date.substring(3, 5));
                 String  xml = "view=sr&func=sr&month1=" +
                         month +
                         "&year1=" +
@@ -330,6 +285,11 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                         URLEncoder.encode(end, "Windows-1251");
                 out.write(xml);
                 out.flush();
+//                view=sr&func=sr&month1=9&year1=2016&data2=02.09.2016&begin1=11%3A20&end1=12%3A40
+//                view=sr&func=sr&month1=0&year1=2016&data2=02.09.2016&begin1=11%3A20&end1=12%3A40
+//                view=sr&func=sr&month1=0&year1=2016&data2=02.09.2016&begin1=11%3A20&end1=12%3A00
+//                view=sr&func=sr&month1=9&year1=2016&data2=02.09.2016&begin1=10%3A00&end1=10%3A40
+                //func=dr&reid=680667&month1=9&year1=2016
 
                 //add reuqest header
                 con.setRequestMethod("POST");

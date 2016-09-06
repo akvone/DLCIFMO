@@ -1,7 +1,12 @@
 package com.akvone.dlcifmo.EnrollModule;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,18 +16,9 @@ import android.widget.DatePicker;
 
 import com.akvone.dlcifmo.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link EnrollDatePickerFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class EnrollDatePickerFragment extends Fragment {
-    private static final int LAYOUT = R.layout.enroll_date_picker;
+import java.util.Calendar;
 
-    private View view;
+public class EnrollDatePickerFragment extends DialogFragment implements  DatePickerDialog.OnDateSetListener{
 
     private OnFragmentInteractionListener mListener;
 
@@ -30,60 +26,32 @@ public class EnrollDatePickerFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment EnrollDatePickerFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static EnrollDatePickerFragment newInstance() {
-        EnrollDatePickerFragment fragment = new EnrollDatePickerFragment();
-        Bundle args = new Bundle();
-        fragment.setArguments(args);
-        return fragment;
+    public void setListener(OnFragmentInteractionListener mListener) {
+        this.mListener = mListener;
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        // создаем DatePickerDialog и возвращаем его
+
+        DatePickerDialog picker = new DatePickerDialog(getActivity(), R.style.DialogTheme, this,
+                year, month, day);
+
+        return picker;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
+    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+        if (mListener != null) {
+            mListener.sendDate(dayOfMonth, monthOfYear, year);
+
         }
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        view = inflater.inflate(LAYOUT, container, false);
-        final DatePicker picker = (DatePicker) view.findViewById(R.id.registrationDatePicker);
-        Button send = (Button) view.findViewById(R.id.datePicked);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) {
-                    mListener.sendDate(picker.getDayOfMonth(), picker.getMonth(), picker.getYear());
-                }
-            }
-        });
-        return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
 
 }

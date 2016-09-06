@@ -6,7 +6,11 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Build;
@@ -16,8 +20,10 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.akvone.dlcifmo.Constants;
@@ -30,20 +36,22 @@ import com.akvone.dlcifmo.R;
 public class LoginActivity extends AppCompatActivity{
 
     /**
-     * Id to identity READ_CONTACTS permission request.
-     */
-    private static final int REQUEST_READ_CONTACTS = 0;
-
-    /**
      * Keep track of the activity_login task to ensure we can cancel it if requested.
      */
     private CheckLoginTask mAuthTask = null;
 
     // UI references.
-    private EditText mLoginView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+    private View progressView;
+    private View scrollView;
+    private View movingLayout;
+    private LinearLayout hidableLayout;
+
+    private EditText loginTextView;
+    private EditText passwordTextView;
+    private Button logInButton;
+
+    private boolean itmoLogoIsHidden = false;
+
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -55,12 +63,52 @@ public class LoginActivity extends AppCompatActivity{
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(Constants.PREF_SKIP_LOGIN, false);
         editor.commit();
-
         setContentView(R.layout.activity_login);
-        // Set up the activity_login form.
-        mLoginView = (EditText) findViewById(R.id.login);
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        //Настраиваем наш layout
+        scrollView = findViewById(R.id.scroll_view);
+        progressView = findViewById(R.id.login_progress_view);
+
+        initActionBar();
+        initLogo();
+        initTextViews();
+        initSwitchToMainButtons();
+    }
+
+    private void initActionBar(){
+        ActionBar actionBar =  getSupportActionBar();
+        if (actionBar!=null) {
+            //TODO: убрать хардкод
+            actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#1e51a4")));
+        }
+    }
+
+    private void initLogo(){
+        TextView aboutUniversity = (TextView) findViewById(R.id.aboutUniversity);
+        Typeface font = Typeface.createFromAsset(getAssets(), "fonts/calibribold.ttf");
+        aboutUniversity.setTypeface(font);
+    }
+
+    private void initTextViews(){
+        movingLayout =  findViewById(R.id.moving_layout);
+        hidableLayout = (LinearLayout) findViewById(R.id.hidable_layout);
+
+        loginTextView = (EditText) findViewById (R.id.login);
+        passwordTextView = (EditText) findViewById(R.id.password);
+        View.OnFocusChangeListener onFocusChangeListener = new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (itmoLogoIsHidden) {
+                    return;
+                }
+                if (hasFocus) {
+                    performLayoutAfterTextViewClicked(true);
+                }
+            }
+        };
+        loginTextView.setOnFocusChangeListener(onFocusChangeListener);
+        passwordTextView.setOnFocusChangeListener(onFocusChangeListener);
+
+        passwordTextView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
@@ -70,26 +118,39 @@ public class LoginActivity extends AppCompatActivity{
                 return false;
             }
         });
+    }
 
-        Button mSignInButton = (Button) findViewById(R.id.sign_in_button);
-        mSignInButton.setOnClickListener(new OnClickListener() {
+    private void initSwitchToMainButtons(){
+        logInButton = (Button) findViewById(R.id.log_in_button);
+        logInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                if (!itmoLogoIsHidden){
+                    loginTextView.requestFocus();
+                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .toggleSoftInput(InputMethodManager.SHOW_IMPLICIT, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                }
+                else{
+                    attemptLogin();
+                }
             }
         });
 
         TextView skipAuthorization = (TextView) findViewById(R.id.skipAuthorization);
-        skipAuthorization.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG);
+        skipAuthorization.setPaintFlags(Paint.UNDERLINE_TEXT_FLAG); //Подчеркиваем текст
         skipAuthorization.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 startMainActivity();
             }
         });
+    }
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+    private void performLayoutAfterTextViewClicked(boolean hide){
+        itmoLogoIsHidden = hide;
+        if (hide) {
+            hidableLayout.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -102,23 +163,23 @@ public class LoginActivity extends AppCompatActivity{
             return;
         }
         // Reset errors.
-        mLoginView.setError(null);
-        mPasswordView.setError(null);
+        loginTextView.setError(null);
+        passwordTextView.setError(null);
         // Store values at the time of the activity_login attempt.
-        String login = mLoginView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String login = loginTextView.getText().toString();
+        String password = passwordTextView.getText().toString();
         boolean cancel = false;
         View focusView = null;
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.setError(getString(R.string.error_field_required));
-            focusView = mPasswordView;
+            passwordTextView.setError(getString(R.string.error_field_required));
+            focusView = passwordTextView;
             cancel = true;
         }
         // Check for a valid activity_login address.
         if (TextUtils.isEmpty(login)) {
-            mLoginView.setError(getString(R.string.error_field_required));
-            focusView = mLoginView;
+            loginTextView.setError(getString(R.string.error_field_required));
+            focusView = loginTextView;
             cancel = true;
         }
         if (cancel) {
@@ -134,16 +195,6 @@ public class LoginActivity extends AppCompatActivity{
         }
     }
 
-//    private boolean isEmailValid(String email) {
-//        //TODO: Replace this with your own logic
-//        return email.contains("@");
-//    }
-//
-//    private boolean isPasswordValid(String password) {
-//        //TODO: Replace this with your own logic
-//        return password.length() > 4;
-//    }
-
     /**
      * Shows the progress UI and hides the activity_login form.
      */
@@ -155,21 +206,21 @@ public class LoginActivity extends AppCompatActivity{
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
-            mLoginFormView.animate().setDuration(shortAnimTime).alpha(
+            scrollView.setVisibility(show ? View.GONE : View.VISIBLE);
+            scrollView.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    scrollView.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
+            progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressView.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         }
@@ -183,8 +234,8 @@ public class LoginActivity extends AppCompatActivity{
                 startMainActivity();
                 break;
             case CheckLoginTask.PASSWORD_IS_INCORRECT:
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                passwordTextView.setError(getString(R.string.error_incorrect_data));
+                passwordTextView.requestFocus();
                 break;
         }
     }

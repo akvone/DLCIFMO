@@ -19,15 +19,11 @@ import javax.net.ssl.HttpsURLConnection;
  * Created by 1 on 05.08.2016.
  */
 public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
+    String TAG = "Load Journal Task";
     JournalFragment journalFragment;
-
-    public LoadJournalTask(JournalFragment fragment) {
-        super();
-        journalFragment = fragment;
-    }
-
     @Override
     protected void onPostExecute(JSONObject eregister) {
+        Log.d(TAG, "onPostExecute: ");
         if (eregister != null){
             try {
                 if (Journal.getInstance() == null){
@@ -46,12 +42,15 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
 
     @Override
     protected void onPreExecute() {
+        Log.d(TAG, "onPreExecute: ");
+        journalFragment = JournalFragment.getInstance();
         journalFragment.setSwipeRefreshState(true);
         journalFragment.setLoadingJournal(true);
     }
 
     @Override
     protected void onCancelled() {
+        Log.d(TAG, "onCancelled: ");
         journalFragment.setSwipeRefreshState(false);
         journalFragment.setLoadingJournal(false);
         Toast.makeText(journalFragment.getContext(), "Ошибка при загрузке. Попробуйте позже", Toast.LENGTH_SHORT).show();
@@ -60,6 +59,7 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
 
     @Override
     protected JSONObject doInBackground(Void... params) {
+        Log.d(TAG, "doInBackground: ");
         JSONObject object = null;
         try {
             URL url = new URL("https://de.ifmo.ru/api/private/eregister");
@@ -88,7 +88,10 @@ public class LoadJournalTask extends AsyncTask<Void, Integer, JSONObject> {
             cancel(true);
         } catch (IOException e){
 //            e.printStackTrace();
-            Log.d("Journal parse", "reader failure");
+            Log.d("Parse journal", "reader failure");
+            cancel(true);
+        } catch (Exception e) {
+            Log.d("Loading journal", "unknown error");
             cancel(true);
         }
         return object;

@@ -30,7 +30,6 @@ public class Subject {
             weight = data.getInt("weight");
         } catch (JSONException  e)
         {
-            Log.d("Subject", "no saved id");
             data.put("id", id);
             data.put("weight", wght);
             this.id = id;
