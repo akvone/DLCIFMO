@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBar;
@@ -24,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.akvone.dlcifmo.Constants;
@@ -33,6 +35,7 @@ import com.akvone.dlcifmo.R;
 /**
  * A activity_login screen that offers activity_login via email/password.
  */
+//ToDo: Проверить работу анимации для API ниже 16 (добавлена LayoutTranslate)
 public class LoginActivity extends AppCompatActivity{
 
     /**
@@ -42,6 +45,7 @@ public class LoginActivity extends AppCompatActivity{
 
     // UI references.
     private View progressView;
+    private ProgressBar progressIndicator;
     private View scrollView;
     private View movingLayout;
     private LinearLayout hidableLayout;
@@ -66,12 +70,19 @@ public class LoginActivity extends AppCompatActivity{
         setContentView(R.layout.activity_login);
         //Настраиваем наш layout
         scrollView = findViewById(R.id.scroll_view);
-        progressView = findViewById(R.id.login_progress_view);
 
+        initProgressView();
         initActionBar();
         initLogo();
         initTextViews();
         initSwitchToMainButtons();
+    }
+
+    private void initProgressView(){
+        progressView = findViewById(R.id.progress_view);
+        progressIndicator = (ProgressBar) findViewById(R.id.progress_indicator);
+//        progressIndicator.getIndeterminateDrawable()
+//                .setColorFilter(0xFF1946BA, PorterDuff.Mode.SRC_IN);
     }
 
     private void initActionBar(){
@@ -216,11 +227,13 @@ public class LoginActivity extends AppCompatActivity{
             });
 
             progressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            progressView.animate().setDuration(shortAnimTime).alpha(
+
+            progressIndicator.setVisibility(show ? View.VISIBLE : View.GONE);
+            progressIndicator.animate().setDuration(shortAnimTime).alpha(
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    progressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                    progressIndicator.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
         }

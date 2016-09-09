@@ -1,6 +1,8 @@
 package com.akvone.dlcifmo.MainModule;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,12 +12,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akvone.dlcifmo.AboutActivity;
 import com.akvone.dlcifmo.Constants;
@@ -107,7 +113,25 @@ public class MainActivity extends AppCompatActivity
     private void initNavigationView(){
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+
+
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.closeDrawer(GravityCompat.START);
+                Toast.makeText(getApplicationContext(),"Общий рейтинг",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
+
+
+
+
+
+
+
+
     public void loadFragments(){
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
@@ -130,10 +154,10 @@ public class MainActivity extends AppCompatActivity
             TextView userNameView = (TextView) header.findViewById(R.id.userName);
             TextView groupNameView = (TextView) header.findViewById(R.id.groupName);
             SharedPreferences preferences = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
-            String positionInRating = preferences.getString(Constants.PREF_POSITION_RATING_INFORMATION,"error");
-            String userName = preferences.getString(Constants.PREF_FAMILY_NAME,"error")
-                    + " " + preferences.getString(Constants.PREF_GIVEN_NAME,"error");
-            String groupName = "Группа " + preferences.getString(Constants.PREF_GROUP_NAME,"error");
+            String positionInRating = preferences.getString(Constants.PREF_POSITION_RATING_INFORMATION,"[-]");
+            String userName = preferences.getString(Constants.PREF_FAMILY_NAME,"[-]")
+                    + " " + preferences.getString(Constants.PREF_GIVEN_NAME,"[-]");
+            String groupName = preferences.getString(Constants.PREF_GROUP_NAME,"[-]");
             positionInRatingView.setText(positionInRating);
             userNameView.setText(userName);
             groupNameView.setText(groupName);
@@ -150,7 +174,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
 
 
     @SuppressWarnings("StatementWithEmptyBody")

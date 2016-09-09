@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created on 21.08.2016.
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
 
     public static final String TAG = "Get Rating More Task";
+    public static ArrayList<OneYearRating> fullRating;
     private MainActivity mainActivity;
 
     public GetRatingAndMoreTask(MainActivity mainActivity){
@@ -42,6 +44,21 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
             String courseNumber = elements.get(elements.size() - 2).text();
             String positionInRatingInformation = elements.get(elements.size() - 1).text();
 
+            OneYearRating oneYearRating = new OneYearRating();
+            oneYearRating.faculty = elements.get(1).text();
+            oneYearRating.courseNumber = elements.get(2).text();
+            oneYearRating.positionInRating = elements.get(3).text();
+            fullRating.add(oneYearRating);
+
+//            for (int i = 0;i<elements.size();i++ ){
+//                int j = i/3;
+//                OneYearRating oneYearRating = new OneYearRating();
+//                oneYearRating.faculty = elements.get(3*j+1).text();
+//                oneYearRating.courseNumber = elements.get(3*j+2).text();
+//                oneYearRating.positionInRating = elements.get(3*j+3).text();
+//                fullRating.add(oneYearRating);
+//            }
+
             SharedPreferences sharedPref = mainActivity.
                     getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -60,5 +77,11 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         mainActivity.updateDrawer();
+    }
+
+    private class OneYearRating{
+        public String faculty;
+        public String courseNumber;
+        public String positionInRating;
     }
 }

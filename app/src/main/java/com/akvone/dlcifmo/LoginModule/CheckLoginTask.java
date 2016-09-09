@@ -3,7 +3,10 @@ package com.akvone.dlcifmo.LoginModule;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.MainModule.MainActivity;
@@ -53,7 +56,19 @@ public class CheckLoginTask extends AsyncTask<Object,Integer,Integer> {
     }
 
     @Override
+    protected void onPreExecute() {
+//        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//        if (!activeNetworkInfo.isConnected()){
+//            Toast.makeText(callerActivity.getApplicationContext(),"ХУЙ",Toast.LENGTH_LONG);
+//        }
+//
+//        super.onPreExecute();
+    }
+
+    @Override
     protected Integer doInBackground(Object... params) {
+
         callerActivity = (Activity) params[0];
         MainActivity.cookieManager = new CookieManager();
         java.net.CookieHandler.setDefault(MainActivity.cookieManager);
