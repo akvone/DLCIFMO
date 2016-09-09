@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.akvone.dlcifmo.AboutActivity;
 import com.akvone.dlcifmo.Constants;
+import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
+import com.akvone.dlcifmo.JournalModule.Journal;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
 import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
@@ -28,6 +30,7 @@ import com.akvone.dlcifmo.R;
 import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 
+import java.io.FileOutputStream;
 import java.net.CookieManager;
 
 public class MainActivity extends AppCompatActivity
@@ -136,7 +139,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -146,8 +148,6 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override

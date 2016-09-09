@@ -115,7 +115,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view = inflater.inflate(LAYOUT, container, false);
-        hidableView = view.findViewById(R.id.hidableLayout);
+        hidableView = view.findViewById(R.id.hidable_layout);
         progressBar = (ProgressBar) view.findViewById(R.id.registration_facility_progress);
         Button b = (Button) view.findViewById(R.id.registrationButton);
 
@@ -292,6 +292,8 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 e.printStackTrace();
             }
             Toast.makeText(context, "Запсиь успешна. Возможно...", Toast.LENGTH_SHORT).show();
+            ((OnFragmentInteractionListener) context).popFragmentStack();
+            EnrollMainFragment.getInstance().updateData();
         }
 
         @Override

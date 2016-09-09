@@ -1,5 +1,7 @@
 package com.akvone.dlcifmo.EnrollModule;
 
+import android.util.Log;
+
 import org.jsoup.nodes.Element;
 
 /**
@@ -21,7 +23,14 @@ public class RecordItem {
         begin = item.child(i++).html();
         end = item.child(i++).html();
         pitched = item.child(i).html();
-        status = item.select("font").first().html();
+        Element statusNode = item.select("font").first();
+
+        if (statusNode != null) {
+            status = statusNode.html();
+        } else {
+            status = "снята";
+            //полагаю
+        }
         String onClick = item.select("font").attr("onClick");
         try {
             id = onClick.substring(5 +onClick.indexOf("reid="), onClick.indexOf("&month"));
@@ -30,7 +39,7 @@ public class RecordItem {
             try {
                 id = onClick.substring(5 +onClick.indexOf("reid="), onClick.indexOf("reid=") + 11);
             } catch (Exception e1) {
-                e1.printStackTrace();
+                Log.d(EnrollMainFragment.TAG, "RecordItem: cannot parse id");
             }
         }
     }
