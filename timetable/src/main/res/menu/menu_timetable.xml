@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.bakatrouble.ifmo_timetable.TimetableActivity"
+    tools:ignore="AlwaysShowAction">
+
+    <item android:id="@+id/action_odd_even"
+        android:title="@string/even_week"
+        app:showAsAction="always|collapseActionView" />
+
+    <item android:id="@+id/action_today"
+        android:icon="@drawable/ic_today_white_24dp"
+        android:title="@string/today"
+        app:showAsAction="always|collapseActionView" />
+
+    <item android:id="@+id/action_search"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/search"
+        app:showAsAction="always|collapseActionView" />
+
+    <item android:id="@+id/action_set_default"
+        android:title="@string/set_default"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_refresh"
+        android:title="@string/refresh"
+        app:showAsAction="never" />
+
+    <item android:id="@+id/action_about"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
+</menu>

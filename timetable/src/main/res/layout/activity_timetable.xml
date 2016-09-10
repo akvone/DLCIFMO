@@ -1,0 +1,155 @@
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout">
+
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/appBar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                xmlns:android="http://schemas.android.com/apk/res/android">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:minHeight="?attr/actionBarSize"
+                    android:background="?attr/colorPrimary">
+
+                </android.support.v7.widget.Toolbar>
+
+                <android.support.design.widget.TabLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tab_layout"
+                    android:visibility="visible"
+                    android:layout_below="@id/toolbar"
+                    android:background="@color/colorPrimary"/>
+
+            </RelativeLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/pager"
+            android:layout_below="@id/appBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.bakatrouble.ifmo_timetable.TimetableActivity" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:contentDescription="@string/string_filler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/dim"
+        android:visibility="invisible"
+        android:id="@+id/dim" />
+
+    <io.codetail.widget.RevealLinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:id="@+id/search_bar"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                card_view:cardUseCompatPadding="true"
+                card_view:cardCornerRadius="@dimen/cardview_default_radius"
+                xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/search_layout"
+                        android:orientation="horizontal"
+                        android:layout_width="fill_parent"
+                        android:layout_height="46dp">
+
+                        <ImageView
+                            android:id="@+id/search_back"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:layout_gravity="center"
+                            android:paddingLeft="14dp"
+                            android:paddingRight="14dp"
+                            android:clickable="true"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_arrow_back_black_24dp"
+                            android:tint="@color/search_icons_color"/>
+
+                        <EditText
+                            android:id="@+id/search_input"
+                            android:layout_width="0dp"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="1"
+                            android:hint="@string/input_gn_or_surname"
+                            android:background="@android:color/transparent"
+                            android:singleLine="true"/>
+
+                        <ImageView
+                            android:id="@+id/search_clear"
+                            android:layout_width="wrap_content"
+                            android:layout_height="fill_parent"
+                            android:layout_gravity="center"
+                            android:paddingLeft="14dp"
+                            android:paddingRight="14dp"
+                            android:clickable="true"
+                            android:background="?attr/selectableItemBackground"
+                            android:src="@drawable/ic_close_white_24dp"
+                            android:tint="@color/search_icons_color"/>
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/line_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:layout_below="@id/search_layout"
+                        android:background="#eee"
+                        android:visibility="gone"/>
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/search_suggestions"
+                        android:layout_below="@+id/line_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:divider="@color/white"
+                        android:visibility="gone"/>
+
+                </RelativeLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    </io.codetail.widget.RevealLinearLayout>
+
+</FrameLayout>

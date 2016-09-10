@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">Расписание ИТМО</string>
+    <string name="title_activity_timetable">Расписание ИТМО</string>
+    <string name="odd_week">Чет</string>
+    <string name="even_week">Нечет</string>
+    <string name="about">О приложении…</string>
+    <string name="search">Поиск</string>
+    <string name="string_filler">FILLER</string>
+    <string name="input_gn_or_surname">Группа или преподаватель</string>
+    <string name="search_error">Не удалось выполнить поиск. Пожалуйста, повторите попытку позднее.</string>
+    <string name="set_default">Показывать при запуске</string>
+    <string name="default_not_set">Расписание, отображаемое при открытии приложения, не выбрано.\nДля установки такого расписания на экране его просмотра выберите пункт меню \"Показывать при запуске\".</string>
+    <string name="loading">Загрузка</string>
+    <string name="default_was_set">Это расписание будет отображаться при запуске</string>
+    <string name="cache_removed">Расписание было удалено из кеша</string>
+    <string name="window_text">Окно</string>
+    <string name="schedule_loading_error">Произошла ошибка при загрузке расписания. Пожалуйста, повторите попытку позднее.</string>
+    <string name="no_lessons_sorry">В этот день нет занятий.\nА жаль :(</string>
+    <string name="refresh">Обновить</string>
+    <string name="today">Расписание на сегодня</string>
+    <string name="open_teacher_schedule">Открыть расписание преподавателя</string>
+    <string name="open_group_schedule" formatted="false">Открыть расписание группы %s</string>
+    <string name="about_text"><![CDATA[
+        Автор: <a href="http://bakatrouble.tk">bakatrouble</a> (2015)<br/>
+        <a href="mailto:bakatrouble@gmail.com">Книга жалоб и предложений</a><br/>
+        Исходный код: <a href="https://github.com/bakatrouble/IFMO_Timetable">GitHub</a><br/><br/>
+        Использованный код:<br/>
+        &#8226; <a href="https://github.com/ozodrukh/CircularReveal">CircularReveal by ozodrukh</a><br/>
+        &#8226; <a href="https://github.com/serso/android-linear-layout-manager">Android Linear Layout Manager by serso</a><br/>
+        &#8226; <a href="https://android.googlesource.com/platform/frameworks/volley">Volley by Google</a><br/>
+        &#8226; Support Libraries by Google<br/>
+        &#8226; А также большое количество кода с StackOverflow и прочих сайтов, авторство которого установить уже не представляется возможным<br/><br/>
+        Распространяется под лицензией <a href="http://opensource.org/licenses/LGPL-3.0">LGPL v3.0</a>
+        ]]>
+    </string>
+    <string name="updates_available">Обнаружены обновления</string>
+    <string name="updates_text" formatted="false"><![CDATA[
+        Для загрузки обновленного приложения проследуйте по следующей ссылке:<br/>
+        <a href="%s">%s</a>
+        ]]>
+    </string>
+    <string name="changelog_title">История изменений</string>
+    <string name="changelog"><![CDATA[
+        <b>v1.1</b><br/>
+        &#8226; Добавлен переход между расписаниями (например, к расписанию преподавателя, ведущего некий предмет)<br/>
+        <font color="red">Внимание! Для активации этого функционала необходимо перезагрузить расписание из меню</font><br/>
+        &#8226; Исправлен переход к "домашнему" расписанию при смене ориентации экрана<br/><br/>
+        <b>v1.0</b><br/>
+        Первая релизная версия.<br/>
+        &#8226; Добавлена история изменений<br/>
+        &#8226; Изменена логика группировки пар для преподавателей<br/>
+        &#8226; Добавлена иконка приложения<br/>
+        &#8226; Изменена цветовая схема приложения
+    ]]></string>
+</resources>
