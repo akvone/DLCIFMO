@@ -71,7 +71,7 @@ public class Journal {
                 Subject s = new Subject(subject, id, 0);
                 s.weight = getSubject(id).weight;
                 setSubject(id++, s);
-
+                JournalFragment.getInstance().mDragListView.getRecyclerView().getAdapter().notifyDataSetChanged();
             }
         }
     }

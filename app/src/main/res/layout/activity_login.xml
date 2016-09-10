@@ -6,7 +6,8 @@
     android:orientation="vertical"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:mainActivity=".LoginModule.LoginActivity">
+    tools:mainActivity=".LoginModule.LoginActivity"
+    >
 
     <!-- Login progress -->
     <ProgressBar

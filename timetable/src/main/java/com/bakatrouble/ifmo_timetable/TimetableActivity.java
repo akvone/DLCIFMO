@@ -12,6 +12,7 @@ import java.util.Map;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Environment;
@@ -94,6 +95,13 @@ public class TimetableActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        try {
+            gid = intent.getExtras().getLong("default_id", -1);
+        } catch (Exception e) {
+            Log.d("Timetable", "onCreate: failed to get id from intent extras");
+        }
 
         Looper.getMainLooper().getThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override

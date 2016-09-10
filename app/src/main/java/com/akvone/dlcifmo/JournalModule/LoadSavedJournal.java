@@ -45,11 +45,11 @@ public class LoadSavedJournal extends AsyncTask<Void, Integer, JSONObject> {
             object = new JSONObject(sb.toString());
         } catch (JSONException e) {
 //            e.printStackTrace();
-            Log.d("Parse journal", "JSON creating failure");
+            Log.d("Load saved journal", "JSON creating failure");
             cancel(true);
         } catch (IOException e){
 //            e.printStackTrace();
-            Log.d("Journal parse", "reader failure");
+            Log.d("Load saved journal", "reader failure");
             cancel(true);
         }
         Log.d(TAG, "doInBackground: finished");

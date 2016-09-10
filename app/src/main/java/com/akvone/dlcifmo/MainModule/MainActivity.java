@@ -197,6 +197,7 @@ public class MainActivity extends AppCompatActivity
                 .clear()
                 .apply();
         Journal.delete();
+        JournalFragment.delete();
         try {
             FileOutputStream v = this.openFileOutput("journal.json", MODE_PRIVATE);
             v.close();

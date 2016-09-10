@@ -79,6 +79,10 @@ public class JournalFragment extends Fragment {
         return fragment;
     }
 
+    public static void delete(){
+        instance = null;
+    }
+
     public void saveJournal(JSONObject journal){
         Log.d("Save journal", "begin");
         //пробежаться по JSON и воткнуть актуальные веса.
