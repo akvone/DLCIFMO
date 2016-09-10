@@ -3,7 +3,6 @@ package com.akvone.dlcifmo.MainModule;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.akvone.dlcifmo.AboutActivity;
+import com.akvone.dlcifmo.ChangesProtocolModule.ChangesProtocolFragment;
 import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
 import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity
     public void loadFragments(){
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
-            changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
+            changesProtocolFragment = ChangesProtocolFragment.newInstance();
             enrollFragment = EnrollMainFragment.newInstance();
         }
         else{
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity
                     .beginTransaction()
                     .replace(R.id.main_activity_container, journalFragment)
                     .commit();
-        } else if (id == R.id.change_protocol) {
+        } else if (id == R.id.changes_protocol) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, changesProtocolFragment)

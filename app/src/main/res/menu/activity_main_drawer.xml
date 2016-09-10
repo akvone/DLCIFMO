@@ -7,7 +7,7 @@
             android:icon="@drawable/ic_chrome_reader_mode_black_24dp"
             android:title="@string/journal" />
         <item
-            android:id="@+id/change_protocol"
+            android:id="@+id/changes_protocol"
             android:icon="@drawable/ic_schedule_black_24dp"
             android:title="@string/changes_protocol" />
         <item
