@@ -14,20 +14,24 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.akvone.dlcifmo.AboutActivity;
+import com.akvone.dlcifmo.ChangesProtocolModule.ChangesProtocolFragment;
 import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
 import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
 import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.JournalModule.Journal;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
+import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.R;
 import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 import com.bakatrouble.ifmo_timetable.TimetableActivity;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.CookieManager;
 
@@ -59,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         skipLogin = sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN, false);
         //Проверяем, нужно ли нам пропустить LoginActivity
         if (skipLogin){ //Да, пропускаем и выполняем основную деятельность
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.main);
             initToolbar();
             initDrawer();
             initNavigationView();
@@ -104,12 +108,28 @@ public class MainActivity extends AppCompatActivity
     private void initNavigationView(){
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        View header = navigationView.getHeaderView(0);
+
+        header.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawer.closeDrawer(GravityCompat.START);
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.full_rating),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                RatingDialog ratingDialog = new RatingDialog(MainActivity.this);
+                ratingDialog.initDialog();
+            }
+        });
     }
+
+
     public void loadFragments(){
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
-            changesProtocolFragment = BlankFragment.newInstance("Здесь будет протокол изменений");
-            enrollFragment = EnrollMainFragment.getInstance();
+            changesProtocolFragment = ChangesProtocolFragment.newInstance();
+            enrollFragment = EnrollMainFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();
@@ -127,10 +147,10 @@ public class MainActivity extends AppCompatActivity
             TextView userNameView = (TextView) header.findViewById(R.id.userName);
             TextView groupNameView = (TextView) header.findViewById(R.id.groupName);
             SharedPreferences preferences = getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
-            String positionInRating = preferences.getString(Constants.PREF_POSITION_RATING_INFORMATION,"error");
-            String userName = preferences.getString(Constants.PREF_FAMILY_NAME,"error")
-                    + " " + preferences.getString(Constants.PREF_GIVEN_NAME,"error");
-            String groupName = "Группа " + preferences.getString(Constants.PREF_GROUP_NAME,"error");
+            String positionInRating = preferences.getString(Constants.PREF_POSITION_RATING_INFORMATION,"[-]");
+            String userName = preferences.getString(Constants.PREF_FAMILY_NAME,"[-]")
+                    + " " + preferences.getString(Constants.PREF_GIVEN_NAME,"[-]");
+            String groupName = preferences.getString(Constants.PREF_GROUP_NAME,"[-]");
             positionInRatingView.setText(positionInRating);
             userNameView.setText(userName);
             groupNameView.setText(groupName);
@@ -147,6 +167,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -158,7 +179,7 @@ public class MainActivity extends AppCompatActivity
                     .beginTransaction()
                     .replace(R.id.main_activity_container, journalFragment)
                     .commit();
-        } else if (id == R.id.change_protocol) {
+        } else if (id == R.id.changes_protocol) {
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.main_activity_container, changesProtocolFragment)

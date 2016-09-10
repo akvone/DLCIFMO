@@ -14,20 +14,6 @@
     <string name="action_settings">Settings</string>
 
 
-
-    <!-- Strings related to activity_login -->
-    <string name="title_activity_login">DLC authentication</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="prompt_email">DLC login</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_log_in">Log in</string>
-    <string name="action_skip_login">Skip authentication</string>
-    <string name="error_incorrect_data">Data is incorrect</string>
-
-
-
-
-    <string name="action_sign_in_short">Sign in</string>
     <!--<string name="error_invalid_email">This email address is invalid</string>-->
     <!--<string name="error_invalid_password">This password is too short</string>-->
 
@@ -105,11 +91,38 @@
     <string name="about_app_name">Distance Learning Center</string>
     <string name="about_contact_us">Contact us</string>
     <string name="journalTitle">Journal</string>
+    <string name="subjectTypeCredit">Зачёт</string>
+    <string name="subjectTypeExam">Экзамен</string>
+    <string name="subjectTypeCourse">Курсовая работа</string>
     <string name="first_semester">1 семестр</string>
     <string name="second_semester">2 семестр</string>
     <string name="error_swipe">Ошибка. Ёпта. потяни вниз, чтобы обновить</string>
     <string name="withdraw_book">Отозвать</string>
     <string name="delete">Удалить</string>
-    <string name="course">Course</string>
-    <string name="position_in_rating">Position in rating</string>
+
+
+    <!-- Strings related to login_activity -->
+    <string name="title_activity_login">DLC authentication</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="prompt_email">DLC login</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_log_in">Log in</string>
+    <string name="action_skip_login">Skip authentication</string>
+    <string name="error_incorrect_data">Data is incorrect</string>
+    <string name="action_sign_in_short">Sign in</string>
+
+    <!-- Strings related to main_activity -->
+    <string name="position_in_rating">Rating position</string>
+    <string name="journal">Journal</string>
+    <string name="changes_protocol">Changes protocol</string>
+    <string name="top_student">Top students</string>
+    <string name="enroll">Enroll to DLC</string>
+    <string name="settings">Settings</string>
+    <string name="about_developers">About developers</string>
+    <string name="log_out">Log out</string>
+    <string name="full_rating">Full rating</string>
+    <string name="course">курс</string>
+
+
+
 </resources>

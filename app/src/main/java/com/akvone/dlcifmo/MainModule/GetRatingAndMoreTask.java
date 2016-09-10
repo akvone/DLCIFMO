@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Created on 21.08.2016.
@@ -19,14 +20,19 @@ import java.io.IOException;
 public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
 
     public static final String TAG = "Get Rating More Task";
+
+    public static ArrayList<OneYearRating> fullRating;
+
     private MainActivity mainActivity;
 
     public GetRatingAndMoreTask(MainActivity mainActivity){
         this.mainActivity = mainActivity;
+        fullRating = new ArrayList<>();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+
         Log.d(TAG, "doInBackground: begin");
         Document doc = null;//Здесь хранится будет разобранный html документ
         //Запрос делаем для получения названия фаультета, номера курса и места в рейтинге
@@ -42,6 +48,16 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
             String courseNumber = elements.get(elements.size() - 2).text();
             String positionInRatingInformation = elements.get(elements.size() - 1).text();
 
+            for (int i = 0;i<elements.size(); i+=3 ){
+                if (i+3<=elements.size()) {
+                    OneYearRating oneYearRating = new OneYearRating();
+                    oneYearRating.facultyName = elements.get(i).text();
+                    oneYearRating.courseNumber = elements.get(i+1).text();
+                    oneYearRating.positionInRating = elements.get(i+2).text();
+                    fullRating.add(oneYearRating);
+                }
+            }
+
             SharedPreferences sharedPref = mainActivity.
                     getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -56,9 +72,17 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
         return null;
     }
 
+
+
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         mainActivity.updateDrawer();
+    }
+
+    public class OneYearRating{
+        public String facultyName;
+        public String courseNumber;
+        public String positionInRating;
     }
 }

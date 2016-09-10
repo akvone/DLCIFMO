@@ -5,19 +5,19 @@
         <item
             android:id="@+id/gradebook"
             android:icon="@drawable/ic_chrome_reader_mode_black_24dp"
-            android:title="Журнал" />
+            android:title="@string/journal" />
         <item
-            android:id="@+id/change_protocol"
+            android:id="@+id/changes_protocol"
             android:icon="@drawable/ic_schedule_black_24dp"
-            android:title="Протокол изменений" />
+            android:title="@string/changes_protocol" />
         <item
             android:id="@+id/top_student"
             android:icon="@drawable/ic_people_black_24dp"
-            android:title="Рейтинг" />
+            android:title="@string/top_student" />
         <item
             android:id="@+id/testing_registration"
             android:icon="@drawable/ic_computer_black_24dp"
-            android:title="Запись в ЦДО" />
+            android:title="@string/enroll" />
         <item
             android:id="@+id/timetable"
             android:icon="@drawable/ic_timetable_black_48dp"
@@ -26,15 +26,15 @@
         <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings_black_24dp"
-            android:title="Настройки" />
+            android:title="@string/settings" />
         <item
             android:id="@+id/about"
             android:icon="@drawable/ic_accessible_black_24dp"
-            android:title="О разработчиках" />
+            android:title="@string/about_developers" />
         <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
-            android:title="Выйти" />
+            android:title="@string/log_out" />
     </group>
 
 

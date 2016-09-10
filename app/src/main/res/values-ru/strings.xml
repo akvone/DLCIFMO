@@ -14,7 +14,7 @@
     <string name="withdraw_book">Отозвать</string>
     <string name="delete">Удалить</string>
 
-    <!-- Strings related to activity_login -->
+    <!-- Strings related to login_activity -->
     <string name="title_activity_login">Авторизация в ЦДО</string>
     <string name="error_field_required">Необходимое поле</string>
     <string name="prompt_email">Логин ЦДО</string>
@@ -22,5 +22,19 @@
     <string name="action_log_in">Войти</string>
     <string name="action_skip_login">Пропустить авторизацию</string>
     <string name="error_incorrect_data">Проверьте данные</string>
+    <string name="action_sign_in_short">Войти</string>
+
+    <!-- Strings related to main_activity -->
+    <string name="position_in_rating">Позиция в рейтинге</string>
+    <string name="journal">Журнал</string>
+    <string name="changes_protocol">Протокол изменений</string>
+    <string name="top_student">Рейтинг</string>
+    <string name="enroll">Запись в ЦДО</string>
+    <string name="settings">Настройки</string>
+    <string name="about_developers">О разработчиках</string>
+    <string name="log_out">Сменить пользователя</string>
+    <string name="full_rating">Полный рейтинг</string>
+    <string name="course">курс</string>
+
 
 </resources>

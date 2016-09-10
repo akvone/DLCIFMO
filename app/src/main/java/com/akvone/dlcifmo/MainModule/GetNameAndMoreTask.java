@@ -20,6 +20,7 @@ public class GetNameAndMoreTask extends AsyncTask<Void,Void,Void> {
 
 
     public static final String TAG = "Get Name and More Task";
+
     private MainActivity mainActivity;
 
     public GetNameAndMoreTask(MainActivity mainActivity){

@@ -53,7 +53,19 @@ public class CheckLoginTask extends AsyncTask<Object,Integer,Integer> {
     }
 
     @Override
+    protected void onPreExecute() {
+//        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+//        if (!activeNetworkInfo.isConnected()){
+//            Toast.makeText(callerActivity.getApplicationContext(),"ХУЙ",Toast.LENGTH_LONG);
+//        }
+//
+//        super.onPreExecute();
+    }
+
+    @Override
     protected Integer doInBackground(Object... params) {
+
         callerActivity = (Activity) params[0];
         MainActivity.cookieManager = new CookieManager();
         java.net.CookieHandler.setDefault(MainActivity.cookieManager);
