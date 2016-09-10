@@ -320,6 +320,7 @@ public class EnrollMainFragment extends Fragment{
                 }
                 Document doc = Jsoup.parse(response.toString());
                 String logged_user = doc.select("input[name=\"logged_user\"]").attr("value");
+                //TODO: checkout other months
                 Element head = doc.select("tr.table_bottomlogoline").first();
                 Element root = head.parent();
                 for (int i = 1; i < root.children().size(); i++) {

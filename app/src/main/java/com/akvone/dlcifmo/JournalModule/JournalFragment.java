@@ -153,67 +153,67 @@ public class JournalFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_change_semester:
-                Journal j = Journal.getInstance();
-                //TODO: унаследовать BaseELA или изменить вид итемов
+        int i1 = item.getItemId();
+        if (i1 == R.id.action_change_semester) {
+            Journal j = Journal.getInstance();
+            //TODO: унаследовать BaseELA или изменить вид итемов
 
-                ArrayList<Map<String, String>> groupData;
-                ArrayList<Map<String, String>> childItemData;
-                ArrayList<ArrayList<Map<String, String>>> childData;
-                Map<String, String> m;
+            ArrayList<Map<String, String>> groupData;
+            ArrayList<Map<String, String>> childItemData;
+            ArrayList<ArrayList<Map<String, String>>> childData;
+            Map<String, String> m;
 
-                groupData = new ArrayList<>();
+            groupData = new ArrayList<>();
+            childItemData = new ArrayList<>();
+            childData = new ArrayList<>();
+            m = new HashMap<>();
+            int i = 0;
+            for (Journal.Year y :
+                    Journal.getInstance().getYears()) {
                 childItemData = new ArrayList<>();
-                childData = new ArrayList<>();
                 m = new HashMap<>();
-                int i = 0;
-                for (Journal.Year y :
-                        Journal.getInstance().getYears()) {
-                    childItemData = new ArrayList<>();
-                    m = new HashMap<>();
-                    m.put("yearName", y.getName() + ((Journal.chosenYear == i) ? " выбран" : ""));
-                    groupData.add(m);
-                    m = new HashMap<>();
-                    m.put("semName", getActivity().getString(R.string.first_semester)
-                        + ((Journal.chosenSemester == 0)&&(Journal.chosenYear == i) ? " выбран" : ""));
-                    childItemData.add(m);
-                    m = new HashMap<>();
-                    m.put("semName", getActivity().getString(R.string.second_semester)
-                        + ((Journal.chosenSemester == 1)&&(Journal.chosenYear == i) ? " выбран" : ""));
-                    childItemData.add(m);
-                    childData.add(childItemData);
-                    i++;
-                }
-                String[] groupFrom = {"yearName"};
-                String[] childFrom = {"semName"};
-                int[] groupTo = {android.R.id.text1};
-                int[] childTo = {android.R.id.text1};
+                m.put("yearName", y.getName() + ((Journal.chosenYear == i) ? " выбран" : ""));
+                groupData.add(m);
+                m = new HashMap<>();
+                m.put("semName", getActivity().getString(R.string.first_semester)
+                        + ((Journal.chosenSemester == 0) && (Journal.chosenYear == i) ? " выбран" : ""));
+                childItemData.add(m);
+                m = new HashMap<>();
+                m.put("semName", getActivity().getString(R.string.second_semester)
+                        + ((Journal.chosenSemester == 1) && (Journal.chosenYear == i) ? " выбран" : ""));
+                childItemData.add(m);
+                childData.add(childItemData);
+                i++;
+            }
+            String[] groupFrom = {"yearName"};
+            String[] childFrom = {"semName"};
+            int[] groupTo = {android.R.id.text1};
+            int[] childTo = {android.R.id.text1};
 
-                SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
-                        getActivity(),
-                        groupData,
-                        android.R.layout.simple_expandable_list_item_1,
-                        groupFrom,
-                        groupTo,
-                        childData,
-                        android.R.layout.simple_list_item_1,
-                        childFrom,
-                        childTo
-                );
+            SimpleExpandableListAdapter adapter = new SimpleExpandableListAdapter(
+                    getActivity(),
+                    groupData,
+                    android.R.layout.simple_expandable_list_item_1,
+                    groupFrom,
+                    groupTo,
+                    childData,
+                    android.R.layout.simple_list_item_1,
+                    childFrom,
+                    childTo
+            );
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                ExpandableListView elv = new ExpandableListView(getActivity());
-                elv.setAdapter(adapter);
-                builder.setView(elv);
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            ExpandableListView elv = new ExpandableListView(getActivity());
+            elv.setAdapter(adapter);
+            builder.setView(elv);
 
-                final AlertDialog dialog = builder.create();
-                dialog.show();
-                elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            final AlertDialog dialog = builder.create();
+            dialog.show();
+            elv.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
                 @Override
                 public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
                     Toast.makeText(getActivity(),
-                            (groupPosition*2 + childPosition + 1) + " семестр",
+                            (groupPosition * 2 + childPosition + 1) + " семестр",
                             Toast.LENGTH_SHORT).show();
                     Journal.chosenSemester = childPosition;
                     Journal.chosenYear = groupPosition;
@@ -223,7 +223,6 @@ public class JournalFragment extends Fragment {
                     return true;
                 }
             });
-
 
 
 //                semesters.clear();
@@ -249,10 +248,10 @@ public class JournalFragment extends Fragment {
 //                    }
 //                });
 //                builder.create().show();
-                //Change adapter
+            //Change adapter
 //                mLoadJournalTask = new LoadJournalTask(this);
 //                mLoadJournalTask.execute();
-                return true;
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }

@@ -178,7 +178,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.settings) {
             startActivity(new Intent(getApplicationContext(),SettingsActivity.class));
         } else if (id == R.id.about) {
-            startActivity(new Intent(getApplicationContext(),AboutActivity.class));
+//            startActivity(new Intent(getApplicationContext(),TimetableActivity.class));
+//            startActivity(new Intent(getApplicationContext(),AboutActivity.class));
         } else if (id == R.id.logout) {
             //Если пользователь решил выйти, очистить его данные
             startLoginActivity();
