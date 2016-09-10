@@ -110,4 +110,6 @@
     <string name="error_swipe">Ошибка. Ёпта. потяни вниз, чтобы обновить</string>
     <string name="withdraw_book">Отозвать</string>
     <string name="delete">Удалить</string>
+    <string name="course">Course</string>
+    <string name="position_in_rating">Position in rating</string>
 </resources>
