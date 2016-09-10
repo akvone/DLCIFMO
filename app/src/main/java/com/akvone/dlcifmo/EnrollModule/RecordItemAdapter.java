@@ -36,7 +36,7 @@ public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.Vi
         holder.num.setText(item.num);
         holder.date.setText(item.date);
         holder.time.setText(item.begin + "-" + item.end);
-        holder.pitched.setText(item.pitched);
+//        holder.pitched.setText(item.pitched);
         holder.status.setText(item.status);
     }
 
@@ -57,7 +57,7 @@ public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.Vi
         TextView num;
         TextView date;
         TextView time;
-        TextView pitched;
+//        TextView pitched;
         TextView status;
         ImageView withdraw;
         public ViewHolder(View itemView) {
@@ -65,7 +65,7 @@ public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.Vi
             num = (TextView) itemView.findViewById(R.id.record_num);
             date = ((TextView) itemView.findViewById(R.id.record_date));
             time = (TextView) itemView.findViewById(R.id.record_time);
-            pitched = (TextView) itemView.findViewById(R.id.record_pitched);
+//            pitched = (TextView) itemView.findViewById(R.id.record_pitched);
             status = (TextView) itemView.findViewById(R.id.record_status);
             withdraw = (ImageView) itemView.findViewById(R.id.withdrawEnroll);
             withdraw.setOnClickListener(new View.OnClickListener() {
