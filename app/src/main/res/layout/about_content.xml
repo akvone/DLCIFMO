@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:mainActivity="com.akvone.dlcifmo.AboutActivity"
-    tools:showIn="@layout/activity_about">
+    tools:showIn="@layout/about">
 
     <RelativeLayout
         android:layout_width="match_parent"
