@@ -33,6 +33,8 @@
     <string name="settings">Настройки</string>
     <string name="about_developers">О разработчиках</string>
     <string name="log_out">Сменить пользователя</string>
+    <string name="full_rating">Полный рейтинг</string>
+    <string name="course">курс</string>
 
 
 </resources>

@@ -20,15 +20,19 @@ import java.util.ArrayList;
 public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
 
     public static final String TAG = "Get Rating More Task";
+
     public static ArrayList<OneYearRating> fullRating;
+
     private MainActivity mainActivity;
 
     public GetRatingAndMoreTask(MainActivity mainActivity){
         this.mainActivity = mainActivity;
+        fullRating = new ArrayList<>();
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+
         Log.d(TAG, "doInBackground: begin");
         Document doc = null;//Здесь хранится будет разобранный html документ
         //Запрос делаем для получения названия фаультета, номера курса и места в рейтинге
@@ -44,20 +48,15 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
             String courseNumber = elements.get(elements.size() - 2).text();
             String positionInRatingInformation = elements.get(elements.size() - 1).text();
 
-            OneYearRating oneYearRating = new OneYearRating();
-            oneYearRating.faculty = elements.get(1).text();
-            oneYearRating.courseNumber = elements.get(2).text();
-            oneYearRating.positionInRating = elements.get(3).text();
-            fullRating.add(oneYearRating);
-
-//            for (int i = 0;i<elements.size();i++ ){
-//                int j = i/3;
-//                OneYearRating oneYearRating = new OneYearRating();
-//                oneYearRating.faculty = elements.get(3*j+1).text();
-//                oneYearRating.courseNumber = elements.get(3*j+2).text();
-//                oneYearRating.positionInRating = elements.get(3*j+3).text();
-//                fullRating.add(oneYearRating);
-//            }
+            for (int i = 0;i<elements.size(); i+=3 ){
+                if (i+3<=elements.size()) {
+                    OneYearRating oneYearRating = new OneYearRating();
+                    oneYearRating.facultyName = elements.get(i).text();
+                    oneYearRating.courseNumber = elements.get(i+1).text();
+                    oneYearRating.positionInRating = elements.get(i+2).text();
+                    fullRating.add(oneYearRating);
+                }
+            }
 
             SharedPreferences sharedPref = mainActivity.
                     getSharedPreferences(Constants.PREF_CURRENT_USER_DATA_FILE, Context.MODE_PRIVATE);
@@ -73,14 +72,16 @@ public class GetRatingAndMoreTask extends AsyncTask<Void,Void,Void> {
         return null;
     }
 
+
+
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
         mainActivity.updateDrawer();
     }
 
-    private class OneYearRating{
-        public String faculty;
+    public class OneYearRating{
+        public String facultyName;
         public String courseNumber;
         public String positionInRating;
     }

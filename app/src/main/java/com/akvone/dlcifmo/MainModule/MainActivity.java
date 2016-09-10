@@ -1,25 +1,19 @@
 package com.akvone.dlcifmo.MainModule;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,13 +24,11 @@ import com.akvone.dlcifmo.EnrollModule.EnrollTimePickerFragment;
 import com.akvone.dlcifmo.EnrollModule.OnFragmentInteractionListener;
 import com.akvone.dlcifmo.JournalModule.Journal;
 import com.akvone.dlcifmo.JournalModule.JournalFragment;
-import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 import com.akvone.dlcifmo.LoginModule.LoginActivity;
 import com.akvone.dlcifmo.R;
 import com.akvone.dlcifmo.SettingsModule.SettingsActivity;
 import com.akvone.dlcifmo.TopStudentsModule.TopStFragment;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.net.CookieManager;
 
@@ -68,7 +60,7 @@ public class MainActivity extends AppCompatActivity
         skipLogin = sharedPref.getBoolean(Constants.PREF_SKIP_LOGIN, false);
         //Проверяем, нужно ли нам пропустить LoginActivity
         if (skipLogin){ //Да, пропускаем и выполняем основную деятельность
-            setContentView(R.layout.activity_main);
+            setContentView(R.layout.main);
             initToolbar();
             initDrawer();
             initNavigationView();
@@ -115,21 +107,19 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         View header = navigationView.getHeaderView(0);
 
-
         header.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 drawer.closeDrawer(GravityCompat.START);
-                Toast.makeText(getApplicationContext(),"Общий рейтинг",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        getResources().getString(R.string.full_rating),
+                        Toast.LENGTH_SHORT)
+                        .show();
+                RatingDialog ratingDialog = new RatingDialog(MainActivity.this);
+                ratingDialog.initDialog();
             }
         });
     }
-
-
-
-
-
-
 
 
     public void loadFragments(){

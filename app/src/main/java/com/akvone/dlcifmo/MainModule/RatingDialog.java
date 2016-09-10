@@ -1,88 +1,73 @@
 package com.akvone.dlcifmo.MainModule;
 
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.database.DataSetObserver;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.akvone.dlcifmo.MainModule.GetRatingAndMoreTask.OneYearRating;
+import com.akvone.dlcifmo.R;
+
+import java.util.ArrayList;
 
 /**
  * Created on 09.09.2016.
  */
+
+//TODO: Изменить "из" и "курс" на английской версии
 public class RatingDialog {
 
-    public void initDialog(Context context){
-//        ListAdapter
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    Context context;
 
-        builder.setTitle("Важное сообщение!")
-                .setMessage("Покормите кота!")
-                .setCancelable(false);
-        AlertDialog alertDialog = builder.create();
+    public RatingDialog(Context context){
+        this.context = context;
     }
 
-    private class RatingListAdapter implements ListAdapter{
+    public void initDialog(){
+        RatingListAdapter adapter = new RatingListAdapter(context,R.layout.main_dialog_item,GetRatingAndMoreTask.fullRating);
 
-        @Override
-        public boolean areAllItemsEnabled() {
-            return false;
-        }
+        ListView listViewItems = new ListView(context);
+        listViewItems.setAdapter(adapter);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setView(listViewItems).show();
+    }
 
-        @Override
-        public boolean isEnabled(int position) {
-            return false;
-        }
+    private class RatingListAdapter extends ArrayAdapter<OneYearRating>{
 
-        @Override
-        public void registerDataSetObserver(DataSetObserver observer) {
+        Context context;
+        int layoutResourceID;
+        ArrayList<OneYearRating> objects;
 
-        }
-
-        @Override
-        public void unregisterDataSetObserver(DataSetObserver observer) {
-
-        }
-
-        @Override
-        public int getCount() {
-            return 0;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return 0;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return false;
+        public RatingListAdapter(Context context, int resource, ArrayList<OneYearRating> objects) {
+            super(context, resource, objects);
+            this.context = context;
+            this.layoutResourceID = resource;
+            this.objects = objects;
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return null;
-        }
+            View view = null;
 
-        @Override
-        public int getItemViewType(int position) {
-            return 0;
-        }
+            if (convertView == null) {
+                LayoutInflater inflater = ((Activity)context).getLayoutInflater();
+                view = inflater.inflate(layoutResourceID, parent ,false);
+            } else {
+                view = convertView;
+            }
 
-        @Override
-        public int getViewTypeCount() {
-            return 0;
-        }
+            OneYearRating object = objects.get(position);
 
-        @Override
-        public boolean isEmpty() {
-            return false;
+            ((TextView)view.findViewById(R.id.course_number)).setText(object.courseNumber);
+            ((TextView)view.findViewById(R.id.faculty_name)).setText(object.facultyName);
+            ((TextView)view.findViewById(R.id.position_in_rating)).setText(object.positionInRating);
+
+            return view;
         }
     }
 

@@ -8,14 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -67,7 +65,7 @@ public class LoginActivity extends AppCompatActivity{
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(Constants.PREF_SKIP_LOGIN, false);
         editor.commit();
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.login);
         //Настраиваем наш layout
         scrollView = findViewById(R.id.scroll_view);
 

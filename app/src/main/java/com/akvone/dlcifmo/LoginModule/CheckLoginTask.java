@@ -3,10 +3,7 @@ package com.akvone.dlcifmo.LoginModule;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.akvone.dlcifmo.Constants;
 import com.akvone.dlcifmo.MainModule.MainActivity;
