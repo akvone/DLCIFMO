@@ -19,6 +19,11 @@
             android:icon="@drawable/ic_computer_black_24dp"
             android:title="Запись в ЦДО" />
         <item
+            android:id="@+id/timetable"
+            android:icon="@drawable/ic_timetable_black_48dp"
+            android:title="Расписание"
+            />
+        <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings_black_24dp"
             android:title="Настройки" />

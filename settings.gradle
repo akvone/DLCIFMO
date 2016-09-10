@@ -1,1 +1,1 @@
-include ':app', ':dragmodule'
+include ':app', ':dragmodule', ':timetable', ':mylibrary'

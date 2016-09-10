@@ -1,12 +1,20 @@
 apply plugin: 'com.android.application'
 
+repositories {
+    jcenter()
+    maven {
+        url "https://jitpack.io"
+    }
+}
+
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.akvone.dlcifmo"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -31,4 +39,5 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'org.jsoup:jsoup:1.9.2'
     compile project(path: ':dragmodule')
+    compile project(path: ':timetable')
 }

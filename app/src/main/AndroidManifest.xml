@@ -3,6 +3,7 @@
     package="com.akvone.dlcifmo">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +23,9 @@
         </activity>
         <activity
             android:name=".LoginModule.LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login">
+
+        </activity>
         <activity
             android:name=".SettingsModule.SettingsActivity"
             android:label="@string/title_activity_settings"
