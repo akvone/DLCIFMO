@@ -84,6 +84,13 @@ public class EnrollMainFragment extends Fragment{
         }
         return instance;
     }
+    public static void delete(){
+        instance = null;
+        records = null;
+        retryAttempts = 0;
+        logged = false;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
