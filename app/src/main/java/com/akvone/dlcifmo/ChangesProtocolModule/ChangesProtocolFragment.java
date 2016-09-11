@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,6 +22,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.NumberFormat;
+import java.util.ArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -45,9 +48,30 @@ public class ChangesProtocolFragment extends Fragment {
         super.onStart();
         GetChangesProtocolTask getChangesProtocolTask
                 = new GetChangesProtocolTask();
-        getChangesProtocolTask.execute(1);
+        getChangesProtocolTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
+    private class SubjectChanges{
+        public String subject;
+        public String name;
+        public double minMark;
+        public double maxMark;
+        public double threshold;
+        public double value;
+        public String date;
+        public String sign;
+
+        public SubjectChanges(String subject, String name, double minMark, double maxMark, double threshold, double value, String date, String sign) {
+            this.subject = subject;
+            this.name = name;
+            this.minMark = minMark;
+            this.maxMark = maxMark;
+            this.threshold = threshold;
+            this.value = value;
+            this.date = date;
+            this.sign = sign;
+        }
+    }
     private class GetChangesProtocolTask extends AsyncTask<Integer,Void,Integer>{
 
         final private String TAG = "Changes Protocol Task";
@@ -56,7 +80,6 @@ public class ChangesProtocolFragment extends Fragment {
         protected Integer doInBackground(Integer... params) {
             Log.d(TAG, "doInBackground: ");
 
-            JSONObject object = null;
             try {
                 URL url = new URL("https://de.ifmo.ru/api/private/eregisterlog?days=90");
 
@@ -77,8 +100,24 @@ public class ChangesProtocolFragment extends Fragment {
                 }
                 bufferedReader.close();
 
-                object = null;
-                object = new JSONObject(stringBuilder.toString());
+                JSONArray receivedArray = new JSONArray(stringBuilder.toString());
+                ArrayList<SubjectChanges> subjectsChanges = new ArrayList<>();
+                for (int i = 0;i<receivedArray.length();i++){
+                    JSONObject jsonObject = (JSONObject) receivedArray.get(i);
+                    JSONObject varObject = jsonObject.getJSONObject("var");
+                    SubjectChanges subjectChanges =
+                            new SubjectChanges(jsonObject.getString("subject"),
+                                    varObject.getString("name"),
+                                    parseJSONDouble(varObject.getString("min")),
+                                    parseJSONDouble(varObject.getString("max")),
+                                    parseJSONDouble(varObject.getString("threshold")),
+                                    parseJSONDouble(jsonObject.getString("value")),
+                                    jsonObject.getString("date"),
+                                    jsonObject.getString("sign"));
+                    subjectsChanges.add(subjectChanges);
+                }
+                int j = 0;
+
             } catch (JSONException e) {
 //            e.printStackTrace();
                 Log.d("Parse journal", "JSON creating failure");
@@ -92,6 +131,23 @@ public class ChangesProtocolFragment extends Fragment {
                 cancel(true);
             }
             return 1;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            super.onPostExecute(integer);
+        }
+
+        public double parseJSONDouble(String stringDouble){
+            if (stringDouble.contains(",")) {
+                if (stringDouble.charAt(0) == ',') {
+                    stringDouble = "0" + stringDouble;
+                }
+                stringDouble = stringDouble.replace(',','.');
+            }
+            double a = Double.parseDouble(stringDouble);
+
+            return a;
         }
     }
 }
