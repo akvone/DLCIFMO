@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity
         if (isFullMode) {
             journalFragment = JournalFragment.getInstance();
             changesProtocolFragment = ChangesProtocolFragment.newInstance();
-            enrollFragment = EnrollMainFragment.newInstance();
+            enrollFragment = EnrollMainFragment.getInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();

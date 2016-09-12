@@ -126,11 +126,15 @@ public class JournalFragment extends Fragment {
                 }
             }
         }
-        mDragListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        ItemAdapter adapter = new ItemAdapter(mItemArray, R.layout.journal_item, R.id.points, false);
-        mDragListView.setAdapter(adapter, true);
-        mDragListView.setCanDragHorizontally(false);
-        mDragListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.journal_item));
+        try {
+            mDragListView.setLayoutManager(new LinearLayoutManager(getContext()));
+            ItemAdapter adapter = new ItemAdapter(mItemArray, R.layout.journal_item, R.id.item_layout, true);
+            mDragListView.setAdapter(adapter, true);
+            mDragListView.setCanDragHorizontally(false);
+            mDragListView.setCustomDragItem(new MyDragItem(getContext(), R.layout.journal_item));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -421,7 +425,7 @@ public class JournalFragment extends Fragment {
             ((TextView) dragView.findViewById(R.id.subjectType)).setText(type);
             ((TextView) dragView.findViewById(R.id.title)).setText(title);
             ((TextView) dragView.findViewById(R.id.points)).setText(points);
-            dragView.setBackgroundColor(dragView.getResources().getColor(R.color.colorPrimary));
+            dragView.setBackgroundColor(dragView.getResources().getColor(R.color.colorGrey));
         }
 
 
