@@ -123,6 +123,8 @@
     <string name="full_rating">Full rating</string>
     <string name="course">курс</string>
 
-
+    <!-- Strings related to changes protocol-->
+    <string name="threshold">Threshold %1$s</string>
+    <string name="mark">%1$s/%2$s</string>
 
 </resources>

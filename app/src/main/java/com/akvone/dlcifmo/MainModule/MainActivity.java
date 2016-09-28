@@ -70,9 +70,10 @@ public class MainActivity extends AppCompatActivity
             if (isFullMode){
                 new MainLoginTask(this).
                         execute(MainLoginTask.UPDATE_NAME_AND_MORE,
-                                MainLoginTask.UPDATE_RATING_AND_MORE,
-                                MainLoginTask.UPDATE_JOURNAL);
-                changeFragment(journalFragment);
+                                MainLoginTask.UPDATE_RATING_AND_MORE
+//                                MainLoginTask.UPDATE_JOURNAL);
+                        );
+                changeFragment(changesProtocolFragment);
             }
             else {
                 changeFragment(topStFragment);
@@ -124,9 +125,11 @@ public class MainActivity extends AppCompatActivity
 
     public void loadFragments(){
         if (isFullMode) {
-            journalFragment = JournalFragment.getInstance();
+//            journalFragment = JournalFragment.getInstance();
+            journalFragment = BlankFragment.newInstance("Временно нет");
             changesProtocolFragment = ChangesProtocolFragment.newInstance();
-            enrollFragment = EnrollMainFragment.newInstance();
+            enrollFragment = BlankFragment.newInstance("Временно нет");
+//            enrollFragment = EnrollMainFragment.newInstance();
         }
         else{
             journalFragment = NonAuthorizedFragment.newInstance();

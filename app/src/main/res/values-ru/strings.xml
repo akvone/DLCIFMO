@@ -36,5 +36,9 @@
     <string name="full_rating">Полный рейтинг</string>
     <string name="course">курс</string>
 
+    <!-- Strings related to changes protocol-->
+    <string name="threshold">Порог %1$s</string>
+    <string name="mark">%1$s из %2$s</string>
+
 
 </resources>

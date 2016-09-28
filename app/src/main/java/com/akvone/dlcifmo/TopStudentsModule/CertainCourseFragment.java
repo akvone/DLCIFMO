@@ -121,7 +121,6 @@ public class CertainCourseFragment extends FragmentWithLoader {
                 arrayList.add(pir);
             }
             adapter.changeContent(arrayList);
-            adapter.notifyDataSetChanged();
             showProgress(false);
         }
     }
@@ -137,6 +136,7 @@ public class CertainCourseFragment extends FragmentWithLoader {
 
         public void changeContent(ArrayList<StudentInformation> ratings){
             peopleRatings = ratings;
+            notifyDataSetChanged();
         }
 
         // Provide a direct reference to each of the views within a data item
