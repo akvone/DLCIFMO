@@ -1,6 +1,7 @@
 package com.akvone.dlcifmo.EnrollModule;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +50,7 @@ public class RecordItemAdapter extends RecyclerView.Adapter<RecordItemAdapter.Vi
         if ((data != null)) {
             data.clear();
             data.addAll(datas);
+            Log.d("Record item", "swap: now data has " + data.size() + " entries");
             notifyDataSetChanged();
         }
     }

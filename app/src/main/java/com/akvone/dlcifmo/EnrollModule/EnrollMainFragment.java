@@ -5,23 +5,31 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.akvone.dlcifmo.Constants;
+import com.akvone.dlcifmo.MainModule.MainActivity;
 import com.akvone.dlcifmo.R;
 
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -31,10 +39,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.CookieManager;
+import java.net.HttpCookie;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -59,6 +70,7 @@ public class EnrollMainFragment extends Fragment{
     private static final int TYPE_ACCEPTED = 2;
     private static final int TYPE_CONSIDERING = 3;
     private static int retryAttempts = 0;
+    private String mLoggedUser;
 
 
     private OnFragmentInteractionListener mListener;
@@ -91,10 +103,86 @@ public class EnrollMainFragment extends Fragment{
         logged = false;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.enroll_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(Calendar.DAY_OF_MONTH, 15);
+
+        ArrayAdapter<String> month = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_list_item_single_choice);
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getContext());
+        dialogBuilder.setTitle("Выбеите месяц");
+        dialogBuilder.setAdapter(month, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                setSwipeRefreshState(true);
+                new LoadRecords().execute(which);
+            }
+        });
+        dialogBuilder.create().show();
+
+        StringBuilder builder;
+        for (int i = 0; i < 9; i++) {
+            builder = new StringBuilder();
+            builder.append(getResources().getStringArray(R.array.month_names)[calendar.get(Calendar.MONTH)]);
+            builder.append(" ");
+            builder.append(calendar.get(Calendar.YEAR));
+            month.add(builder.toString());
+            calendar.add(Calendar.DATE, 30);
+//            switch (calendar.getMaximum(Calendar.MONTH)){
+//                case Calendar.JANUARY:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.FEBRUARY:
+//                    builder.append("Февраль");
+//                    break;
+//                case Calendar.MARCH:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.APRIL:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.MAY:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.JUNE:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.JULY:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.AUGUST:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.SEPTEMBER:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.OCTOBER:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.NOVEMBER:
+//                    builder.append(getString(R.string.january));
+//                    break;
+//                case Calendar.DECEMBER:
+//                    builder.append(getString(R.string.january));
+//                    break;
+        }
+
+
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
         Log.d(TAG, "onCreate: ");
     }
 
@@ -114,6 +202,7 @@ public class EnrollMainFragment extends Fragment{
 //            adapter = new RecordItemAdapter(records, this);
             mScrollView.setVisibility(View.GONE);
             adapter.swap(records);
+
         }
 
         mSwipe = (SwipeRefreshLayout) view.findViewById(R.id.enroll_refresh_main);
@@ -126,7 +215,7 @@ public class EnrollMainFragment extends Fragment{
                 if (logged) {
                     new LoadRecords().execute();
                 } else {
-                    login();
+                    login(null, null);
                 }
 
             }
@@ -137,6 +226,7 @@ public class EnrollMainFragment extends Fragment{
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "FABonClick: just in case if you want to know, data has " + records.size() + " entries");
                 EnrollDatePickerFragment dialogFragment = new EnrollDatePickerFragment();
                 dialogFragment.setListener(mListener);
                 dialogFragment.show(getActivity().getSupportFragmentManager(), null);
@@ -169,16 +259,29 @@ public class EnrollMainFragment extends Fragment{
         mListener = null;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.enroll);
+    }
 
     void updateData(){
 
         new LoadRecords().execute();
     }
     void updateRecords(){
-        mScrollView.setVisibility(View.GONE);
+        if (mScrollView != null && recyclerView != null) {
+            if (records != null ) {
+                if (records.size() != 0) {
+                    mScrollView.setVisibility(View.GONE);
+                } else {
+                    mScrollView.setVisibility(View.VISIBLE);
+                }
+            }
 //        RecordItemAdapter adapter = new RecordItemAdapter(records, this);
 //        recyclerView.setAdapter(adapter);
-        ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
+            ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
+        }
         Log.d(TAG, "updateRecords: records" + records.toString());
 
     }
@@ -218,7 +321,10 @@ public class EnrollMainFragment extends Fragment{
         }
         builder.create().show();
     }
-    void login(){
+    public void login(@Nullable String lg, @Nullable String  pw){
+        if (lg != null && pw != null){
+            new LoginTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,lg, pw);
+        } else
         new LoginTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR,login, pass);
     }
     public void setSwipeRefreshState(final boolean refreshing) {
@@ -234,7 +340,9 @@ public class EnrollMainFragment extends Fragment{
 
     }
 
-    class LoginTask extends AsyncTask<String,Integer,Integer> {
+
+
+    public class LoginTask extends AsyncTask<String,Integer,Integer> {
         final int NO_INTERNET = 2;
         final int DATA_LOAD_FAIL = 4;
 
@@ -326,12 +434,16 @@ public class EnrollMainFragment extends Fragment{
                     response.append(inputLine);
                 }
                 Document doc = Jsoup.parse(response.toString());
-                String logged_user = doc.select("input[name=\"logged_user\"]").attr("value");
+                mLoggedUser = doc.select("input[name=\"logged_user\"]").attr("value");
                 //TODO: checkout other months
-                Element head = doc.select("tr.table_bottomlogoline").first();
-                Element root = head.parent();
-                for (int i = 1; i < root.children().size(); i++) {
-                    records.add(new RecordItem(root.child(i)));
+                if (!mLoggedUser.equals("")) {
+                    Element head = doc.select("tr.table_bottomlogoline").first();
+                    Element root = head.parent();
+                    for (int i = 1; i < root.children().size(); i++) {
+                        records.add(new RecordItem(root.child(i)));
+                    }
+                } else {
+                    cancel(true);
                 }
                 Log.d(TAG, "doInBackground: LoginTask");
             } catch (UnknownHostException e){
@@ -344,7 +456,6 @@ public class EnrollMainFragment extends Fragment{
                 cancel(true);
                 return DATA_LOAD_FAIL;
             }
-
             return null;
         }
 
@@ -361,27 +472,78 @@ public class EnrollMainFragment extends Fragment{
                 case DATA_LOAD_FAIL:
                     if (retryAttempts++ < 4) {
                         Log.d(TAG, "onCancelled: try to login again");
-                        login();
+                        login(null, null);
                     } else retryAttempts = 0;
                     break;
             }
         }
     }
-    private class LoadRecords extends AsyncTask<Void,Integer,Integer> {
+    private class LoadRecords extends AsyncTask<Integer,Integer,Integer> {
 
         final int NO_INTERNET = 2;
         final int DATA_LOAD_FAIL = 4;
 
         @Override
-        protected Integer doInBackground(Void... params) {
+        protected Integer doInBackground(Integer... params) {
             try {
 
-                Document doc = Jsoup.connect("https://de.ifmo.ru/--schedule/student.php").timeout(10000).get();
-                String logged_user = doc.select("input[name=\"logged_user\"]").attr("value");
-                Element head = doc.select("tr.table_bottomlogoline").first();
-                Element root = head.parent();
-                for (int i = 1; i < root.children().size(); i++) {
-                    records.add(new RecordItem(root.child(i)));
+                if (params.length != 0 && mLoggedUser != null){
+                    Calendar calendar = new GregorianCalendar();
+                    calendar.add(Calendar.MONTH, params[0]);
+                    int month = calendar.get(Calendar.MONTH) + 1;
+                    int year = calendar.get(Calendar.YEAR);
+                    String jsCookie = "JSESSIONID";
+                    String phpCookie = "PHPSESSID";
+                    String jsCookieVal = "";
+                    String phpCookieVal = "";
+
+                    
+                    CookieManager manager = MainActivity.cookieManager;
+                    for (HttpCookie c :
+                            manager.getCookieStore().getCookies()) {
+                        if (c.getName().equals(jsCookie)){
+                            jsCookieVal = c.getValue();
+                        }
+                        if (c.getName().equals(phpCookie)){
+                            phpCookieVal = c.getValue();
+                        }
+                    }
+
+                    Connection.Response response = Jsoup.connect("https://de.ifmo.ru/--schedule/student.php")
+                            .header("Content-Type","application/x-www-form-urlencoded;charset=UTF-8")
+                            .cookie(jsCookie, jsCookieVal)
+                            .cookie(phpCookie, phpCookieVal)
+                            .data("view", "%2F")
+                            .data("logged_user", mLoggedUser)
+                            .data("month1", "" + month)
+                            .data("year1", "" + year)
+                            .method(Connection.Method.POST)
+                            .timeout(10000)
+                            .execute();
+                    Document doc = response.parse();
+
+                    Element head = doc.select("tr.table_bottomlogoline").first();
+                    if (head != null) {
+                        Element root = head.parent();
+                        for (int i = 1; i < root.children().size(); i++) {
+                            records.add(new RecordItem(root.child(i)));
+                        }
+                    } else {
+                        //TODO: нет элементов в ответе
+                    }
+                    Log.d(TAG, "doInBackground: ");
+                } else {
+                    Document doc = Jsoup.connect("https://de.ifmo.ru/--schedule/student.php").timeout(10000).get();
+                    mLoggedUser = doc.select("input[name=\"logged_user\"]").attr("value");
+                    Element head = doc.select("tr.table_bottomlogoline").first();
+                    if (head != null) {
+                        Element root = head.parent();
+                        for (int i = 1; i < root.children().size(); i++) {
+                            records.add(new RecordItem(root.child(i)));
+                        }
+                    } else {
+                        //TODO: нет элементов в ответе
+                    }
                 }
                 Log.d(TAG, "doInBackground: ");
 
@@ -440,7 +602,7 @@ public class EnrollMainFragment extends Fragment{
         static final int NO_INTERNET = 2;
         static final int DATA_LOAD_FAIL = 4;
 
-        public WithdrawEnroll(int pos, int type) {
+        WithdrawEnroll(int pos, int type) {
             this.pos = pos;
             this.type = type;
         }
@@ -498,7 +660,7 @@ public class EnrollMainFragment extends Fragment{
             setSwipeRefreshState(false);
             try {
                 records.remove(pos);
-                ((RecordItemAdapter) recyclerView.getAdapter()).swap(records);
+                updateData();
                 Toast.makeText(getContext(), "Отозвана", Toast.LENGTH_SHORT).show();
             } catch (Exception e) {
                 Log.e(TAG, "Failed to remove recyclerView item", e);

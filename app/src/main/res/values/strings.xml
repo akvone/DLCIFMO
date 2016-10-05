@@ -67,6 +67,20 @@
         <item>360</item>
         <item>-1</item>
     </string-array>
+    <string-array name="month_names">
+        <item>Январь</item>
+        <item>Февраль</item>
+        <item>Март</item>
+        <item>Апрель</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Август</item>
+        <item>Сентябрь</item>
+        <item>Октябрь</item>
+        <item>Ноябрь</item>
+        <item>Декабрь</item>
+    </string-array>
 
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
@@ -122,7 +136,10 @@
     <string name="log_out">Log out</string>
     <string name="full_rating">Full rating</string>
     <string name="course">курс</string>
-
+    <string name="title_timetable">Расписание</string>
+    <string name="enroll_failed">Запись не удалась</string>
+    <string name="january">Январь</string>
+    <string name="no_enroll_records">Похоже, у вас нет записей</string>
 
 
 </resources>

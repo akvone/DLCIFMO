@@ -43,6 +43,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainModule.MainActivity" />
         </activity>
+        <activity
+            android:name=".SettingsModule.PreferencesActivity"
+            android:label="@string/settings"
+            android:parentActivityName=".MainModule.MainActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainModule.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

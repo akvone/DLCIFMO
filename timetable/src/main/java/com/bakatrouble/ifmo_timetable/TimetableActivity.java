@@ -11,6 +11,7 @@ import java.util.Map;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -96,6 +97,7 @@ public class TimetableActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         Intent intent = getIntent();
         try {
             gid = intent.getExtras().getLong("default_id", -1);
@@ -129,8 +131,19 @@ public class TimetableActivity extends AppCompatActivity {
         setListeners();
         createObjects();
 
+
         mSearchBar.setVisibility(View.INVISIBLE);
         this.setSupportActionBar(mToolbar);
+        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+
 
         mPreferences = getSharedPreferences(PREFS_FILE, 0);
         if(savedInstanceState == null){

@@ -151,6 +151,7 @@ public class JournalFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         this.optionsMenu = menu;
         inflater.inflate(R.menu.journal_menu, menu);
+        //я подарю торт тому,кто сможет объяснить, зачем я поместил этот код именно сюда.
         if (loadingJournal){
             setSwipeRefreshState(true);
         } else {
@@ -359,8 +360,8 @@ public class JournalFragment extends Fragment {
 
     @Override
     public void onResume() {
-        Log.d(TAG, "onResume: ");
         super.onResume();
+        ((AppCompatActivity) getActivity()).getSupportActionBar().setTitle(R.string.journalTitle);
     }
 
     @Override

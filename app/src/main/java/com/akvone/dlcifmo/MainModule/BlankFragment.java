@@ -3,6 +3,7 @@ package com.akvone.dlcifmo.MainModule;
 
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,4 +64,9 @@ public class BlankFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        (((AppCompatActivity) getContext())).getSupportActionBar().setTitle(R.string.app_name);
+    }
 }

@@ -21,7 +21,7 @@
         <item
             android:id="@+id/timetable"
             android:icon="@drawable/ic_timetable_black_48dp"
-            android:title="Расписание"
+            android:title="@string/title_timetable"
             />
         <item
             android:id="@+id/settings"

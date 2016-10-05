@@ -68,7 +68,6 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
     private View view;
     private RecyclerView recyclerView;
     private Context context;
-    protected static CookieManager enrollCookieManager;
     private StringBuilder date; //Дата записи, приведённая к понятному ЦДО виду (01.09.2016)
     private BookItemAdaptor adapter;
     private LinkedHashMap<Integer, Integer> streaks;
@@ -353,6 +352,10 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                 }
 
                 Document doc = Jsoup.parse(response.toString());
+                if (!doc.text().contains("принята")) {
+                    cancel(true);
+                    return null;
+                }
                 Log.d("Doc", doc.select("td").toString());
             } catch (UnknownHostException e){
                 e.printStackTrace();
@@ -371,7 +374,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
             super.onCancelled();
             if (result == TO_RESTART) {
                 Log.d(TAG, "onCancelled: enroll will fail cuz no login");
-                EnrollMainFragment.getInstance().login();
+                EnrollMainFragment.getInstance().login(null, null);
                 new Enroll().execute(mBegin, mEnd);
             }
 //            if (result == DATA_LOAD_FAIL){
@@ -381,7 +384,7 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
 //            }
             switch (result){
                 case NO_INTERNET:
-                    String string = getContext().getString(R.string.error_swipe) + "login";
+                    String string;// = getContext().getString(R.string.error_swipe) + "login";
                     string = "Я интернета не чувствую!";
                     Toast.makeText(getContext(), string, Toast.LENGTH_SHORT).show();
                     try {
@@ -392,6 +395,10 @@ public class EnrollTimePickerFragment extends FragmentWithLoader {
                     break;
                 case DATA_LOAD_FAIL:
                     new Enroll().execute(mBegin, mEnd);
+                    break;
+                default:
+                    Toast.makeText(context, R.string.enroll_failed, Toast.LENGTH_SHORT).show();
+                    getActivity().onBackPressed();
                     break;
             }
         }

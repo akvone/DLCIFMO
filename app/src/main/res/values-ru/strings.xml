@@ -35,6 +35,10 @@
     <string name="log_out">Сменить пользователя</string>
     <string name="full_rating">Полный рейтинг</string>
     <string name="course">курс</string>
+    <string name="title_timetable">Расписание</string>
+    <string name="enroll_failed">Запись не удалась</string>
+    <string name="january">Январь</string>
+    <string name="no_enroll_records">Похоже, у вас нет записей</string>
 
 
 </resources>

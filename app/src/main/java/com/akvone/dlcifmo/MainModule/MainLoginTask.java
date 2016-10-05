@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.akvone.dlcifmo.EnrollModule.EnrollMainFragment;
 import com.akvone.dlcifmo.JournalModule.LoadJournalTask;
 import com.akvone.dlcifmo.JournalModule.LoadSavedJournal;
 
@@ -40,6 +41,7 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
     public static final int UPDATE_NAME_AND_MORE = 1;
     public static final int UPDATE_RATING_AND_MORE = 2;
     public static final int UPDATE_JOURNAL = 3;
+    public static final int LOGIN_PHP = 4;
 
     public static final String ITMO_LOGIN_URL = "https://de.ifmo.ru/servlet/";
 
@@ -151,8 +153,12 @@ public class MainLoginTask extends AsyncTask<Integer,Void,ArrayList<Integer>> {
             if (toDoList.contains(UPDATE_RATING_AND_MORE)) {
                 new GetRatingAndMoreTask(mainActivity).execute();
             }
-            if (toDoList.contains(UPDATE_JOURNAL)){
+            if (toDoList.contains(UPDATE_JOURNAL)) {
                 new LoadJournalTask().execute();
+            }
+            if (toDoList.contains(LOGIN_PHP)){
+                EnrollMainFragment.getInstance().login(login, password);
+                //я осознаю, что за этот код я попаду в ад, и готов принять отвественность.
             }
         }
     }
